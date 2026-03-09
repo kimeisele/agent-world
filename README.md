@@ -10,7 +10,7 @@ Authoritative world-governance seam for the Agent ecosystem.
 - **agent-world** — world truth: registry, policies, world contracts, heartbeat aggregation, world audit direction
 - **agent-city** — local runtime: mayor, council, economy, immigration, local campaigns
 - **agent-internet** — projection/public membrane: public docs, graph/wiki rendering, publication
-- **steward-agent** — optional world/operator superagent; may serve the repos, but does not define world truth
+- **steward / steward-agent** — optional world/operator superagent; may serve the repos, but does not define world truth
 
 ## Founding Scope
 
@@ -58,4 +58,4 @@ pytest -q
 1. Move world truth out of `agent-city`
 2. Repoint `agent-internet` world projections to `agent-world`
 3. Convert city federation from implicit mothership assumptions to world-registry-driven contracts
-4. Let `steward-agent` serve world-approved workflows rather than define the world itself
+4. Let `steward` (package: `steward-agent`) serve world-approved workflows rather than define the world itself
