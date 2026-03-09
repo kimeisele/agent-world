@@ -1,5 +1,6 @@
 """agent-world package."""
 
+from .authority_exports import export_authority_bundle, write_authority_bundle
 from .heartbeat import build_world_state, run_world_heartbeat
 from .protocol import CityReport, FederationDirective
 from .registry import CityRecord, WorldRegistry, load_world_registry
@@ -10,6 +11,8 @@ __all__ = [
     "FederationDirective",
     "WorldRegistry",
     "build_world_state",
+    "export_authority_bundle",
     "load_world_registry",
     "run_world_heartbeat",
+    "write_authority_bundle",
 ]

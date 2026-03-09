@@ -9,3 +9,5 @@ build/
 
 # Runtime state
 data/world_state.json
+.authority-exports/
+.authority-export-bundle.json
