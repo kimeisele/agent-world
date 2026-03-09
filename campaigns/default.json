@@ -1,0 +1,17 @@
+{
+  "campaigns": [
+    {
+      "id": "world_infrastructure_v1",
+      "scope": "world",
+      "participating_cities": ["agent-city"],
+      "north_star": "Establish the first clean world/city/internet/substrate boundary.",
+      "success_signals": [
+        {"signal": "world_registry_present", "threshold": true},
+        {"signal": "world_heartbeat_operational", "threshold": true},
+        {"signal": "agent_city_world_semantics_migrated", "threshold": false}
+      ],
+      "owner": "agent-world",
+      "city_missions": []
+    }
+  ]
+}

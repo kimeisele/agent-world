@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-world/schemas/city_report.schema.json",
+  "title": "CityReport",
+  "type": "object",
+  "required": ["city_id", "reported_at_utc", "status", "summary"],
+  "properties": {
+    "city_id": {"type": "string", "minLength": 1},
+    "reported_at_utc": {"type": "string", "minLength": 1},
+    "status": {"type": "string", "enum": ["alive", "dormant", "degraded", "suspended"]},
+    "summary": {
+      "type": "object",
+      "properties": {
+        "agents": {"type": "integer", "minimum": 0},
+        "services": {"type": "integer", "minimum": 0},
+        "notes": {"type": "string"}
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

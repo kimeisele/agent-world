@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-world/schemas/federation_directive.schema.json",
+  "title": "FederationDirective",
+  "type": "object",
+  "required": ["directive_id", "target_city_id", "directive_type", "issued_at_utc", "payload"],
+  "properties": {
+    "directive_id": {"type": "string", "minLength": 1},
+    "target_city_id": {"type": "string", "minLength": 1},
+    "directive_type": {"type": "string", "minLength": 1},
+    "issued_at_utc": {"type": "string", "minLength": 1},
+    "payload": {"type": "object"}
+  },
+  "additionalProperties": true
+}

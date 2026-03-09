@@ -1,0 +1,21 @@
+world:
+  world_id: agent-world
+  origin_id: world://agent-world
+  steward_substrate: kimeisele/steward-protocol
+  public_projection: kimeisele/agent-internet
+
+cities:
+  - city_id: agent-city
+    repo: kimeisele/agent-city
+    status: alive
+    registered_at: "2026-03-09"
+    trust_level: founding
+    federation_endpoint: data/federation/nadi_inbox.json
+    projection_source: wiki-src/manifest.yaml
+    last_heartbeat: null
+    capabilities:
+      - governance
+      - economy
+      - immigration
+      - code_execution
+      - federation_bridge

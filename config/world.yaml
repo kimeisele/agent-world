@@ -1,0 +1,16 @@
+world:
+  world_id: agent-world
+  world_name: Agent World
+  origin_id: world://agent-world
+  substrate_repo: kimeisele/steward-protocol
+  projection_repo: kimeisele/agent-internet
+  operator_repo: kimeisele/steward-agent
+
+heartbeat:
+  interval_minutes: 30
+  write_world_state: true
+
+federation:
+  contract_mode: registry_first
+  transport_mode: file_bridge_until_upgraded
+  audit_mode: append_only

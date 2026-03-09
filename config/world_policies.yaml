@@ -1,0 +1,13 @@
+policies:
+  - id: city_autonomy_limits
+    rule: No city may unilaterally exile another city.
+    enforcement: world_governance_gate
+    requires: supermajority_of_cities
+  - id: cross_city_visa_recognition
+    rule: CITIZEN visas issued by founding or verified cities may be recognized across the world.
+    enforcement: declarative
+    trust_minimum: verified
+  - id: federation_bandwidth_quota
+    rule: No city may consume more than 30 percent of the shared federation message budget within one hour.
+    enforcement: world_rate_limiter
+    window_s: 3600
