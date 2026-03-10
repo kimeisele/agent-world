@@ -16,47 +16,68 @@ AGENT_WORLD_REPO_ID = "agent-world"
 AGENT_WORLD_PUBLIC_WIKI_BINDING_ID = "agent-world-public-wiki"
 
 
-def _document_specs() -> list[dict[str, str]]:
+def _document_specs() -> list[dict[str, Any]]:
     return [
         {
             "document_id": "world_constitution",
             "title": "World Constitution",
             "wiki_name": "World-Constitution",
             "source_path": "docs/WORLD_CONSTITUTION.md",
+            "authority": "binding",
+            "domain": "governance",
             "section": "Foundations",
             "public_summary": "The constitutional baseline for world-level governance and boundaries.",
+            "labels": {
+                "source_kind": "markdown",
+                "source_role": "entrypoint",
+                "include_in_sidebar": "true",
+                "featured": "true",
+                "nav_label": "World Constitution",
+            },
         },
         {
             "document_id": "world_registry",
             "title": "World Registry",
             "wiki_name": "World-Registry",
             "source_path": "config/world_registry.yaml",
+            "authority": "reference",
+            "domain": "registry",
             "section": "Registry",
             "public_summary": "The authoritative registry of known cities and their world-scoped standing.",
+            "labels": {"source_kind": "yaml", "include_in_sidebar": "true", "nav_label": "World Registry"},
         },
         {
             "document_id": "world_policies",
             "title": "World Policies",
             "wiki_name": "World-Policies",
             "source_path": "config/world_policies.yaml",
+            "authority": "binding",
+            "domain": "policy",
             "section": "Policy",
             "public_summary": "Declared global policy rules that sit above any single city runtime.",
+            "labels": {"source_kind": "yaml", "nav_label": "World Policies"},
         },
         {
             "document_id": "repo_boundaries",
             "title": "Repo Boundaries",
             "wiki_name": "Repo-Boundaries",
             "source_path": "docs/REPO_BOUNDARIES.md",
+            "authority": "reference",
+            "domain": "boundary",
             "section": "Boundary",
             "public_summary": "The verified responsibility split across steward-protocol, agent-world, agent-city, agent-internet, and steward.",
+            "labels": {"source_kind": "markdown", "include_in_sidebar": "true", "nav_label": "Repo Boundaries"},
         },
         {
             "document_id": "cross_repo_roadmap",
             "title": "Cross Repo Roadmap",
             "wiki_name": "Cross-Repo-Roadmap",
             "source_path": "docs/CROSS_REPO_ROADMAP.md",
+            "authority": "operative",
+            "domain": "coordination",
             "section": "Coordination",
             "public_summary": "The migration path for moving world semantics out of city-local contracts and into agent-world.",
+            "labels": {"source_kind": "markdown", "nav_label": "Cross Repo Roadmap"},
         },
     ]
 
@@ -90,10 +111,14 @@ def export_public_summary_registry(*, base_path: Path | None = None) -> dict[str
     _ = repo_root(base_path)
     records = [
         {
-            "id": spec["document_id"],
+            "document_id": spec["document_id"],
             "title": spec["title"],
             "wiki_name": spec["wiki_name"],
+            "authority": spec["authority"],
+            "domain": spec["domain"],
+            "source_path": spec["source_path"],
             "public_summary": spec["public_summary"],
+            "labels": dict(spec["labels"]),
         }
         for spec in _document_specs()
     ]
@@ -108,7 +133,11 @@ def export_source_surface_registry(*, base_path: Path | None = None) -> dict[str
             "title": spec["title"],
             "wiki_name": spec["wiki_name"],
             "source_path": spec["source_path"],
+            "authority": spec["authority"],
+            "domain": spec["domain"],
             "section": spec["section"],
+            "public_abstract": spec["public_summary"],
+            "labels": dict(spec["labels"]),
         }
         for spec in _document_specs()
     ]
@@ -128,9 +157,46 @@ def export_surface_metadata(*, base_path: Path | None = None) -> dict[str, Any]:
         "kind": "surface_metadata",
         "repo_id": AGENT_WORLD_REPO_ID,
         "world": world_config,
+        "public_surface": {
+            "repo_label": "Agent World",
+            "document_prefix": "agent_world",
+            "overview_page": {
+                "document_id": "agent_world_authority",
+                "rel": "agent_world_authority",
+                "kind": "agent_world_authority",
+                "title": "Agent World Authority",
+                "wiki_name": "Agent-World-Authority",
+                "entrypoint": True,
+            },
+            "canonical_index_page": {
+                "document_id": "agent_world_canonical_surface",
+                "rel": "agent_world_canonical_surface",
+                "kind": "agent_world_canonical_surface",
+                "title": "Agent World Canonical Surface",
+                "wiki_name": "Agent-World-Canonical-Surface",
+                "entrypoint": False,
+            },
+        },
         "surface_registry": {
             "document_count": registry_payload["document_count"],
             "sections": sorted({str(record["section"]) for record in registry_payload["documents"]}),
+            "pages": [
+                {
+                    "id": spec["document_id"],
+                    "title": spec["title"],
+                    "wiki_name": spec["wiki_name"],
+                    "filename": f"{spec['wiki_name']}.md",
+                    "page_class": "canonical",
+                    "authority": spec["authority"],
+                    "domain": spec["domain"],
+                    "section": spec["section"],
+                    "public_summary": spec["public_summary"],
+                    "featured": spec["labels"].get("featured") == "true",
+                    "include_in_sidebar": spec["labels"].get("include_in_sidebar") == "true",
+                    "query_aliases": [],
+                }
+                for spec in _document_specs()
+            ],
         },
     }
 

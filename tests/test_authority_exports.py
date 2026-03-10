@@ -27,10 +27,15 @@ def test_write_authority_bundle_materializes_artifacts(tmp_path):
     assert bundle_path == (tmp_path / ".authority-export-bundle.json").resolve()
     canonical = json.loads((tmp_path / ".authority-exports" / "canonical-surface.json").read_text())
     registry = json.loads((tmp_path / ".authority-exports" / "source-surface-registry.json").read_text())
+    metadata = json.loads((tmp_path / ".authority-exports" / "surface-metadata.json").read_text())
     persisted_bundle = json.loads(bundle_path.read_text())
 
     assert canonical["kind"] == "canonical_surface"
     assert any(document["document_id"] == "world_constitution" for document in canonical["documents"])
+    assert canonical["documents"][0]["labels"]["source_role"] == "entrypoint"
     assert registry["document_count"] == 5
+    assert registry["documents"][0]["authority"] == "binding"
+    assert metadata["public_surface"]["overview_page"]["wiki_name"] == "Agent-World-Authority"
+    assert metadata["surface_registry"]["pages"][0]["include_in_sidebar"] is True
     assert persisted_bundle["source_sha"] == "def456"
     assert bundle["repo_role"]["owner_boundary"] == "world_governance_surface"

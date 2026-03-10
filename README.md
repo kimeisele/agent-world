@@ -22,6 +22,26 @@ This founding repo intentionally starts thin:
 - `docs/WORLD_CONSTITUTION.md` — world-level governance baseline
 - `schemas/` — first shared protocol payload contracts
 - `agent_world/heartbeat.py` — minimal world heartbeat that aggregates registry + policy state into `data/world_state.json`
+- `agent_world/authority_exports.py` — world authority bundle export for projection/publication consumers
+
+## Authority export boundary
+
+`agent-world` is now the **world-authority source repo** for public world-facing documents.
+
+It exports machine-readable authority artifacts such as:
+
+- `canonical_surface`
+- `public_summary_registry`
+- `source_surface_registry`
+- `surface_metadata`
+
+Those exports carry world-document identity, summaries, labels, and public-surface hints.
+
+`agent-internet` consumes those exports to build public wiki/graph/search projections. That means:
+
+- `agent-world` owns world meaning
+- `agent-internet` owns membrane rendering/publication
+- `agent-city` does not define world truth
 
 What is **not** here yet:
 
