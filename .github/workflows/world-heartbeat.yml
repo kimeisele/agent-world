@@ -7,6 +7,9 @@ on:
   schedule:
     - cron: '*/30 * * * *'
 
+permissions:
+  contents: write
+
 jobs:
   verify-and-heartbeat:
     runs-on: ubuntu-latest
@@ -21,3 +24,29 @@ jobs:
         run: pytest -q
       - name: Build world state
         run: python -m agent_world.cli heartbeat
+      - name: Build authority feed
+        run: python -m agent_world.cli export-authority-feed --repo-root . --output-dir .authority-feed-out
+      - name: Publish authority feed branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          REMOTE="https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          TMPDIR=$(mktemp -d)
+          if git ls-remote --exit-code --heads "$REMOTE" authority-feed >/dev/null 2>&1; then
+            git clone --depth 1 --branch authority-feed "$REMOTE" "$TMPDIR/feed"
+          else
+            git init "$TMPDIR/feed"
+            git -C "$TMPDIR/feed" remote add origin "$REMOTE"
+            git -C "$TMPDIR/feed" checkout -b authority-feed
+          fi
+          git -C "$TMPDIR/feed" config user.name "agent-world-authority-feed"
+          git -C "$TMPDIR/feed" config user.email "bot@agent-world"
+          rsync -a .authority-feed-out/ "$TMPDIR/feed/"
+          git -C "$TMPDIR/feed" add latest-authority-manifest.json bundles
+          if git -C "$TMPDIR/feed" diff --cached --quiet; then
+            echo "No authority feed changes"
+            exit 0
+          fi
+          git -C "$TMPDIR/feed" commit -m "authority-feed: ${GITHUB_SHA}"
+          git -C "$TMPDIR/feed" push origin HEAD:authority-feed

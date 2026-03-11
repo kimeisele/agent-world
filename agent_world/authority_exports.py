@@ -14,6 +14,7 @@ from .registry import load_world_registry
 
 AGENT_WORLD_REPO_ID = "agent-world"
 AGENT_WORLD_PUBLIC_WIKI_BINDING_ID = "agent-world-public-wiki"
+AUTHORITY_FEED_CONTRACT_VERSION = 1
 
 
 def _document_specs() -> list[dict[str, Any]]:
@@ -91,6 +92,13 @@ def _source_sha(root: Path) -> str:
 
 def _digest(payload: dict[str, Any]) -> str:
     return sha256(json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
+
+
+def _write_json(path: Path, payload: dict[str, Any]) -> str:
+    rendered = json.dumps(payload, indent=2, sort_keys=True) + "\n"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(rendered)
+    return sha256(rendered.encode("utf-8")).hexdigest()
 
 
 def export_canonical_surface(*, base_path: Path | None = None) -> dict[str, Any]:
@@ -269,3 +277,43 @@ def write_authority_bundle(*, base_path: Path | None = None, output_dir: Path | 
     bundle_path = target_root / ".authority-export-bundle.json"
     bundle_path.write_text(json.dumps(bundle, indent=2, sort_keys=True) + "\n")
     return bundle_path, bundle
+
+
+def write_authority_feed(*, base_path: Path | None = None, output_dir: Path | None = None, source_sha: str | None = None, generated_at: float | None = None) -> tuple[Path, dict[str, Any]]:
+    root = repo_root(base_path)
+    target_root = Path(output_dir).resolve() if output_dir is not None else root / ".authority-feed"
+    bundle = export_authority_bundle(base_path=root, source_sha=source_sha, generated_at=generated_at)
+    effective_source_sha = str(bundle.get("source_sha", "")).strip() or "working-tree"
+    bundle_root = target_root / "bundles" / effective_source_sha
+    artifact_payloads = {
+        ".authority-exports/canonical-surface.json": export_canonical_surface(base_path=root),
+        ".authority-exports/public-summary-registry.json": export_public_summary_registry(base_path=root),
+        ".authority-exports/source-surface-registry.json": export_source_surface_registry(base_path=root),
+        ".authority-exports/surface-metadata.json": export_surface_metadata(base_path=root),
+    }
+    artifacts_manifest: dict[str, dict[str, str]] = {}
+    for relative_path, payload in artifact_payloads.items():
+        file_sha = _write_json(bundle_root / relative_path, payload)
+        artifacts_manifest[relative_path] = {
+            "path": str(Path("bundles") / effective_source_sha / relative_path),
+            "sha256": file_sha,
+            "export_kind": next(kind for kind, uri in bundle["artifact_paths"].items() if uri == relative_path),
+        }
+    bundle_path = bundle_root / "source-authority-bundle.json"
+    bundle_sha = _write_json(bundle_path, bundle)
+    manifest = {
+        "kind": "source_authority_feed_manifest",
+        "contract_version": AUTHORITY_FEED_CONTRACT_VERSION,
+        "generated_at": bundle["generated_at"],
+        "source_repo_id": AGENT_WORLD_REPO_ID,
+        "source_sha": effective_source_sha,
+        "bundle": {
+            "path": str(Path("bundles") / effective_source_sha / "source-authority-bundle.json"),
+            "sha256": bundle_sha,
+            "kind": "source_authority_bundle",
+        },
+        "artifacts": artifacts_manifest,
+    }
+    manifest_path = target_root / "latest-authority-manifest.json"
+    _write_json(manifest_path, manifest)
+    return manifest_path, manifest

@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from agent_world.authority_exports import AGENT_WORLD_PUBLIC_WIKI_BINDING_ID, export_authority_bundle, write_authority_bundle
+from agent_world.authority_exports import AGENT_WORLD_PUBLIC_WIKI_BINDING_ID, export_authority_bundle, write_authority_bundle, write_authority_feed
 
 
 def test_export_authority_bundle_has_world_contract_shape():
@@ -39,3 +39,21 @@ def test_write_authority_bundle_materializes_artifacts(tmp_path):
     assert metadata["surface_registry"]["pages"][0]["include_in_sidebar"] is True
     assert persisted_bundle["source_sha"] == "def456"
     assert bundle["repo_role"]["owner_boundary"] == "world_governance_surface"
+
+
+def test_write_authority_feed_materializes_manifest_and_versioned_bundle(tmp_path):
+    root = Path(__file__).resolve().parents[1]
+    manifest_path, manifest = write_authority_feed(base_path=root, output_dir=tmp_path, source_sha="feed123", generated_at=789.0)
+
+    bundle_path = tmp_path / manifest["bundle"]["path"]
+    canonical_path = tmp_path / manifest["artifacts"][".authority-exports/canonical-surface.json"]["path"]
+    persisted_manifest = json.loads(manifest_path.read_text())
+    persisted_bundle = json.loads(bundle_path.read_text())
+
+    assert manifest_path == (tmp_path / "latest-authority-manifest.json").resolve()
+    assert persisted_manifest["kind"] == "source_authority_feed_manifest"
+    assert persisted_manifest["source_repo_id"] == "agent-world"
+    assert persisted_manifest["source_sha"] == "feed123"
+    assert persisted_bundle["source_sha"] == "feed123"
+    assert canonical_path.exists()
+    assert json.loads(canonical_path.read_text())["kind"] == "canonical_surface"
