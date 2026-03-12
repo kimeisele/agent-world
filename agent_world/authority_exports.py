@@ -185,6 +185,14 @@ def export_surface_metadata(*, base_path: Path | None = None) -> dict[str, Any]:
                 "entrypoint": False,
             },
         },
+        "federation_surface": {
+            "surface_role": "canonical_public_source_authority",
+            "canonical_for_public_federation": True,
+            "publication_model": "github_authority_feed_plus_projected_wiki",
+            "public_channels": ["authority_feed_manifest", "canonical_surface", "public_summary_registry"],
+            "operator_companion_surfaces": ["world_heartbeat_operator_plane"],
+            "consumer_guidance": "Treat this authority feed and its projected wiki pages as public federation truth; authenticated control planes are companion operator surfaces.",
+        },
         "surface_registry": {
             "document_count": registry_payload["document_count"],
             "sections": sorted({str(record["section"]) for record in registry_payload["documents"]}),

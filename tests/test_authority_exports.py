@@ -36,6 +36,8 @@ def test_write_authority_bundle_materializes_artifacts(tmp_path):
     assert registry["document_count"] == 5
     assert registry["documents"][0]["authority"] == "binding"
     assert metadata["public_surface"]["overview_page"]["wiki_name"] == "Agent-World-Authority"
+    assert metadata["federation_surface"]["surface_role"] == "canonical_public_source_authority"
+    assert metadata["federation_surface"]["canonical_for_public_federation"] is True
     assert metadata["surface_registry"]["pages"][0]["include_in_sidebar"] is True
     assert persisted_bundle["source_sha"] == "def456"
     assert bundle["repo_role"]["owner_boundary"] == "world_governance_surface"
