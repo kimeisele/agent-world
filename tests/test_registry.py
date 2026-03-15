@@ -9,7 +9,13 @@ def test_load_world_registry_checked_in_repo():
 
     assert registry.world_id == "agent-world"
     assert registry.public_projection == "kimeisele/agent-internet"
-    assert len(registry.cities) == 1
+
+    # Cities
+    assert len(registry.cities) >= 1
     city = registry.city_by_id("agent-city")
     assert city.status == "alive"
     assert "governance" in city.capabilities
+
+    # Agents (populated by steward discovery)
+    assert len(registry.agents) >= 1
+    assert len(registry.all_repos) >= 2

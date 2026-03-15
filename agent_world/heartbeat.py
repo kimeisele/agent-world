@@ -20,16 +20,19 @@ def build_world_state(*, base_path: Path | None = None, now: datetime | None = N
     warnings = [f"missing_last_heartbeat:{city.city_id}" for city in registry.cities if not city.last_heartbeat]
     return {
         "kind": "world_state",
-        "version": 1,
+        "version": 2,
         "world_id": registry.world_id,
         "generated_at_utc": now_utc,
         "world": world_config.get("world") or {},
         "summary": {
             "registered_cities": len(registry.cities),
+            "registered_agents": len(registry.agents),
+            "total_nodes": len(registry.cities) + len(registry.agents),
             "founding_cities": len([city for city in registry.cities if city.trust_level == "founding"]),
             "active_policies": len(policies),
         },
         "cities": [city.to_payload() for city in registry.cities],
+        "agents": [agent.to_payload() for agent in registry.agents],
         "warnings": warnings,
     }
 
