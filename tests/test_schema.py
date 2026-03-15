@@ -3,7 +3,14 @@ from pathlib import Path
 
 import yaml
 
-from agent_world.schema import RegistryValidationError, validate_registry, validate_registry_or_raise
+from agent_world.schema import (
+    PolicyValidationError,
+    RegistryValidationError,
+    validate_policies,
+    validate_policies_or_raise,
+    validate_registry,
+    validate_registry_or_raise,
+)
 
 
 def _load_registry():
@@ -11,6 +18,14 @@ def _load_registry():
     return yaml.safe_load((root / "config/world_registry.yaml").read_text())
 
 
+def _load_policies():
+    root = Path(__file__).resolve().parents[1]
+    return yaml.safe_load((root / "config/world_policies.yaml").read_text())
+
+
+# ---------------------------------------------------------------------------
+# Registry validation
+# ---------------------------------------------------------------------------
 def test_checked_in_registry_is_valid():
     payload = _load_registry()
     errors = validate_registry(payload)
@@ -60,4 +75,54 @@ def test_validate_or_raise_raises():
         validate_registry_or_raise(payload)
         assert False, "should have raised"
     except RegistryValidationError as exc:
+        assert len(exc.errors) >= 1
+
+
+# ---------------------------------------------------------------------------
+# Policy validation
+# ---------------------------------------------------------------------------
+def test_checked_in_policies_are_valid():
+    payload = _load_policies()
+    errors = validate_policies(payload)
+    assert errors == [], errors
+
+
+def test_missing_policies_key():
+    errors = validate_policies({"other": True})
+    assert any("policies: must be a list" in e for e in errors)
+
+
+def test_policy_missing_required_fields():
+    payload = {"policies": [{"enforcement": "declarative"}]}
+    errors = validate_policies(payload)
+    assert any("id: required" in e for e in errors)
+    assert any("rule: required" in e for e in errors)
+
+
+def test_policy_invalid_enforcement():
+    payload = _load_policies()
+    payload["policies"][0]["enforcement"] = "magic"
+    errors = validate_policies(payload)
+    assert any("not in" in e for e in errors)
+
+
+def test_policy_trust_penalty_missing_value():
+    payload = {"policies": [{"id": "test", "rule": "x", "enforcement": "trust_penalty"}]}
+    errors = validate_policies(payload)
+    assert any("trust_penalty: required" in e for e in errors)
+
+
+def test_policy_duplicate_id():
+    payload = _load_policies()
+    dup = copy.deepcopy(payload["policies"][0])
+    payload["policies"].append(dup)
+    errors = validate_policies(payload)
+    assert any("duplicate" in e for e in errors)
+
+
+def test_validate_policies_or_raise():
+    try:
+        validate_policies_or_raise({"not_policies": []})
+        assert False, "should have raised"
+    except PolicyValidationError as exc:
         assert len(exc.errors) >= 1

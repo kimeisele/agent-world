@@ -8,7 +8,9 @@ from pathlib import Path
 from typing import Any
 
 from .config import load_yaml, repo_root
+from .governance import evaluate_federation_governance
 from .registry import load_world_registry
+from .schema import validate_policies_or_raise
 
 
 def _collect_capability_index(
@@ -71,7 +73,9 @@ def build_world_state(*, base_path: Path | None = None, now: datetime | None = N
     root = repo_root(base_path)
     registry = load_world_registry(base_path=root)
     world_config = load_yaml("config/world.yaml", base_path=root)
-    policies = load_yaml("config/world_policies.yaml", base_path=root).get("policies") or []
+    policies_payload = load_yaml("config/world_policies.yaml", base_path=root)
+    validate_policies_or_raise(policies_payload)
+    policies = policies_payload.get("policies") or []
     now_utc = (now or datetime.now(timezone.utc)).isoformat()
 
     warnings = [f"missing_last_heartbeat:{city.city_id}" for city in registry.cities if not city.last_heartbeat]
@@ -81,10 +85,17 @@ def build_world_state(*, base_path: Path | None = None, now: datetime | None = N
 
     federation_health = _build_federation_health(registry.cities, registry.agents)
     capability_index = _collect_capability_index(registry.cities, registry.agents)
+    governance = evaluate_federation_governance(registry, policies)
+
+    # Surface non-compliant nodes as warnings
+    for node in governance["nodes"]:
+        if not node["compliant"]:
+            for v in node["violations"]:
+                warnings.append(f"policy_violation:{node['node_id']}:{v['policy_id']}")
 
     return {
         "kind": "world_state",
-        "version": 3,
+        "version": 4,
         "world_id": registry.world_id,
         "generated_at_utc": now_utc,
         "world": world_config.get("world") or {},
@@ -96,6 +107,7 @@ def build_world_state(*, base_path: Path | None = None, now: datetime | None = N
             "active_policies": len(policies),
         },
         "federation_health": federation_health,
+        "governance": governance,
         "capability_index": capability_index,
         "cities": [city.to_payload() for city in registry.cities],
         "agents": [agent.to_payload() for agent in registry.agents],

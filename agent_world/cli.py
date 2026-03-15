@@ -26,6 +26,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "heartbeat":
         path, state = run_world_heartbeat(base_path=args.repo_root, output_path=args.output)
         health = state.get("federation_health", {})
+        gov = state.get("governance", {})
         print(json.dumps({
             "output": str(path),
             "summary": state["summary"],
@@ -33,6 +34,11 @@ def main(argv: list[str] | None = None) -> int:
                 "health_ratio": health.get("health_ratio"),
                 "active_nodes": health.get("active_nodes"),
                 "descriptor_incomplete": health.get("descriptor_incomplete"),
+            },
+            "governance": {
+                "compliance_ratio": gov.get("compliance_ratio"),
+                "non_compliant_nodes": gov.get("non_compliant_nodes"),
+                "total_trust_penalty": gov.get("total_trust_penalty"),
             },
             "warnings": state["warnings"],
         }, indent=2))
