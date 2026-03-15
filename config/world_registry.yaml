@@ -29,7 +29,10 @@ agents:
     trust_level: observed
     owner_boundary: agent_city_surface
     capabilities:
-      - general
+      - authority_feed
+      - projection
+      - governance
+      - code_execution
 
   - agent_id: agent-internet
     repo: kimeisele/agent-internet
@@ -38,7 +41,8 @@ agents:
     trust_level: observed
     owner_boundary: agent_internet_surface
     capabilities:
-      - general
+      - projection_host
+      - descriptor_incomplete
 
   - agent_id: agent-template
     repo: kimeisele/agent-template
@@ -47,7 +51,9 @@ agents:
     trust_level: observed
     owner_boundary: agent_template_surface
     capabilities:
-      - general
+      - authority_feed
+      - projection
+      - scaffolding
 
   - agent_id: agent-world
     repo: kimeisele/agent-world
@@ -56,7 +62,10 @@ agents:
     trust_level: observed
     owner_boundary: world_governance_surface
     capabilities:
-      - general
+      - authority_feed
+      - projection
+      - world_governance
+      - registry
 
   - agent_id: steward
     repo: kimeisele/steward
@@ -65,7 +74,9 @@ agents:
     trust_level: observed
     owner_boundary: steward_surface
     capabilities:
-      - general
+      - authority_feed
+      - projection
+      - orchestration
 
   - agent_id: steward-federation
     repo: kimeisele/steward-federation
@@ -74,7 +85,8 @@ agents:
     trust_level: observed
     owner_boundary: steward_federation_surface
     capabilities:
-      - general
+      - federation_tooling
+      - descriptor_incomplete
 
   - agent_id: steward-protocol
     repo: kimeisele/steward-protocol
@@ -83,7 +95,9 @@ agents:
     trust_level: observed
     owner_boundary: protocol_governance
     capabilities:
-      - general
+      - authority_feed
+      - projection
+      - protocol_governance
 
   - agent_id: steward-test
     repo: kimeisele/steward-test
@@ -92,4 +106,5 @@ agents:
     trust_level: observed
     owner_boundary: steward_test_surface
     capabilities:
-      - general
+      - testing
+      - descriptor_incomplete
