@@ -75,6 +75,23 @@ def _check_ci_required(
         })
 
 
+def _check_devcontainer_required(
+    node: CityRecord | AgentRecord,
+    policy: dict[str, Any],
+    violations: list[dict[str, Any]],
+) -> None:
+    # Nodes that explicitly declare devcontainer_ready are compliant.
+    # Nodes without the capability AND with descriptor_incomplete are definitely non-compliant.
+    # Others: unverifiable without steward diagnostic, benefit of the doubt.
+    if "devcontainer_ready" not in node.capabilities and "descriptor_incomplete" in node.capabilities:
+        violations.append({
+            "policy_id": policy["id"],
+            "enforcement": policy.get("enforcement", ""),
+            "trust_penalty": float(policy.get("trust_penalty", 0)),
+            "reason": "no devcontainer_ready capability and descriptor_incomplete",
+        })
+
+
 def _check_visa_recognition_precondition(
     node: CityRecord | AgentRecord,
     policy: dict[str, Any],
@@ -100,6 +117,7 @@ def _check_visa_recognition_precondition(
 _POLICY_CHECKERS: dict[str, Any] = {
     "federation_descriptor_required": _check_descriptor_required,
     "federation_ci_required": _check_ci_required,
+    "federation_devcontainer_required": _check_devcontainer_required,
 }
 
 _ADVISORY_CHECKERS: dict[str, Any] = {

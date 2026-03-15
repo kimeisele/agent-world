@@ -25,3 +25,10 @@ policies:
     trust_penalty: 0.3
     verification: steward_diagnostic
     remediation: steward_healer
+
+  - id: federation_devcontainer_required
+    rule: Federation repos must include .devcontainer/devcontainer.json for zero-config container-based development across all platforms.
+    enforcement: trust_penalty
+    trust_penalty: 0.15
+    verification: steward_diagnostic
+    remediation: agent_template_devcontainer

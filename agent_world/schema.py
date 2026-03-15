@@ -37,6 +37,7 @@ KNOWN_AGENT_CAPABILITIES = {
     "governance",
     "code_execution",
     "descriptor_incomplete",
+    "devcontainer_ready",
 }
 
 # ---------------------------------------------------------------------------
