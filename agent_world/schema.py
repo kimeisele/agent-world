@@ -38,6 +38,9 @@ KNOWN_AGENT_CAPABILITIES = {
     "code_execution",
     "descriptor_incomplete",
     "devcontainer_ready",
+    "research_synthesis",
+    "cross_domain_analysis",
+    "open_inquiry",
 }
 
 # ---------------------------------------------------------------------------

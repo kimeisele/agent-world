@@ -99,24 +99,46 @@ In `schema.py` unter `KNOWN_AGENT_CAPABILITIES`:
 
 ## 6. Bewertung des aktuellen Foederations-Netzwerks
 
-### Aktuelle Compliance (aus Registry-Daten):
+### Erkenntnisse aus agent-research (Nadi-Netzwerk-Analyse)
 
-| Repo | Descriptor | CI | DevContainer | Status |
-|------|-----------|-----|-------------|--------|
-| kimeisele/agent-city | OK | OK | FEHLT | teilweise compliant |
-| kimeisele/agent-internet | unvollstaendig | unklar | FEHLT | non-compliant |
-| kimeisele/agent-world | OK | OK | FEHLT | teilweise compliant |
-| kimeisele/steward-protocol | OK | OK | FEHLT | teilweise compliant |
-| kimeisele/steward | OK | OK | FEHLT | teilweise compliant |
-| kimeisele/steward-federation | unvollstaendig | unklar | FEHLT | non-compliant |
-| kimeisele/steward-test | unvollstaendig | unklar | FEHLT | non-compliant |
-| kimeisele/agent-template | OK | OK | FEHLT | teilweise compliant |
+agent-research hat eine umfassende Federation-Scaling-Analyse durchgefuehrt
+(`federation-scaling-billion-agents.md`), die folgende relevante Punkte ergibt:
+
+- **agent-research war NICHT in der World Registry registriert** — obwohl es ein aktiver,
+  gesunder Knoten mit Descriptor v2, 4 Workflows, Nadi-Transport und 7 Fakultaeten ist.
+  **Jetzt korrigiert: agent-research ist im Registry eingetragen.**
+- **Nadi-Transport laeuft bereits** ueber GitHub Issues (labels: `federation-nadi`).
+  agent-research hat Issues an agent-world (#8), steward (#25), agent-internet (#6) gesendet.
+- **WCFA-Muster identifiziert**: `file_bridge_until_upgraded` in world.yaml ist ein
+  bekanntes "Wired, Crashed, Fell Back, Abandoned"-Pattern. Die Foederation nutzt
+  de facto bereits GitHub Issues als Transport.
+- **Descriptor v2** in agent-research hat erweiterte Felder: `node_role`, `faculties`,
+  `federation_interfaces` (produces/consumes/protocols). agent-world ist noch auf v1.
+- **GitHub-API Rate-Limit** wird ab ~500 Knoten zum Problem (5000 req/h authentifiziert).
+  DevContainer-Setup muss auch GITHUB_TOKEN-Handling beruecksichtigen.
+
+### Aktuelle Compliance (aus Registry + GitHub API):
+
+| Repo | Descriptor | CI | DevContainer | Nadi-Aktiv | Status |
+|------|-----------|-----|-------------|------------|--------|
+| kimeisele/agent-city | OK | OK | FEHLT | ja | teilweise compliant |
+| kimeisele/agent-internet | unvollstaendig | unklar | FEHLT | ja | non-compliant |
+| kimeisele/agent-world | OK | OK | **NEU** | ja (empfaengt) | compliant |
+| kimeisele/agent-research | **OK (v2!)** | **4 Workflows** | FEHLT | **ja (sendet)** | teilweise compliant |
+| kimeisele/steward-protocol | OK | OK | FEHLT | nein | teilweise compliant |
+| kimeisele/steward | OK | OK | FEHLT | ja | teilweise compliant |
+| kimeisele/steward-federation | unvollstaendig | unklar | FEHLT | nein | non-compliant |
+| kimeisele/steward-test | unvollstaendig | unklar | FEHLT | nein | non-compliant |
+| kimeisele/agent-template | OK | OK | FEHLT | nein | teilweise compliant |
 
 ### Diagnose
 
-- **Kein einziges Repo** hat aktuell eine `.devcontainer/` Konfiguration
+- **Nur agent-world** hat jetzt eine `.devcontainer/` Konfiguration
 - 3 Repos (agent-internet, steward-federation, steward-test) haben `descriptor_incomplete`
-- Die Foederation leidet unter 2 strukturellen Defiziten: fehlende DevContainers + unvollstaendige Descriptoren
+- **agent-research ist der gesundeste Nicht-World-Knoten**: v2-Descriptor, 4 CI-Workflows,
+  Nadi-Transport aktiv, Research-Engine mit 4-Phasen-Zyklus
+- Die Foederation nutzt bereits de facto Nadi-Transport (GitHub Issues), obwohl
+  world.yaml noch `file_bridge_until_upgraded` deklariert
 
 ## 7. Umsetzungsplan
 
@@ -134,15 +156,33 @@ In `schema.py` unter `KNOWN_AGENT_CAPABILITIES`:
 - DevContainer-Config in jedes Foederations-Repo rollen
 - Per PR oder per Steward-Automation
 
-## 8. Limitierung: Kein GitHub CLI verfuegbar
+## 8. Erkenntnisse aus der Nadi-Netzwerk-Analyse
 
-Ohne `gh` CLI koennen wir die Remote-Repos nicht direkt pruefen. Die Bewertung basiert auf:
-- Registry-Daten aus `world_registry.yaml`
-- Capability-Flags (insb. `descriptor_incomplete`)
-- Lokale Analyse von agent-world selbst
+agent-research Issue #3 (federation scaling) liefert konkrete Architektur-Empfehlungen:
 
-Fuer eine vollstaendige Netzwerk-Bewertung braeuchte man entweder `gh` CLI oder GitHub API-Zugriff per Token.
+1. **DevContainer muss GITHUB_TOKEN-Handling einschliessen** — fuer Nadi-Transport
+   und API-Zugriffe innerhalb des Containers. `containerEnv` in devcontainer.json
+   sollte `GITHUB_TOKEN` forwarden (Codespaces tut das automatisch).
+2. **bootstrap.sh sollte Nadi-Connectivity pruefen** — ein einfacher
+   `curl https://api.github.com/rate_limit` als Health-Check.
+3. **Descriptor v2 Migration** — agent-world sollte `.well-known/agent-federation.json`
+   auf v2 upgraden (mit `node_role`, `federation_interfaces`).
+4. **Die 4 offenen Nadi-Issues auf agent-world** (#4-#8) sollten prozessiert werden —
+   sie enthalten Research-Inquiries und Review-Requests von agent-research.
+
+## 9. Offene Issues auf agent-world via Nadi
+
+| Issue | Typ | Von | Inhalt |
+|-------|-----|-----|--------|
+| #8 | research-inquiry | agent-research | Governance fuer Billion-Agent-Scale mit Sharding |
+| #7 | review-request | agent-research | Test Research Result |
+| #6 | review-request | agent-research | How do agents coordinate? |
+| #5 | review-request | agent-research | Test Research Result |
+| #4 | review-request | agent-research | How do agents coordinate? |
+
+Diese Issues sind **lebende Nadi-Nachrichten** — der Beweis dass der
+Federation-Transport bereits funktioniert.
 
 ---
 
-**Empfehlung:** Sofort mit Schritt 1 beginnen — agent-world als Vorbild-Repo mit DevContainer ausstatten und die Policy deklarieren. Der Rest folgt per Foederations-Mechanik.
+**Empfehlung:** Sofort mit Schritt 1 beginnen — agent-world als Vorbild-Repo mit DevContainer ausstatten und die Policy deklarieren. agent-research als Vorbild-Knoten nutzen (v2-Descriptor, 4 Workflows, Nadi-Transport). Die offenen Nadi-Issues auf agent-world sollten in einem Folge-Schritt bearbeitet werden.

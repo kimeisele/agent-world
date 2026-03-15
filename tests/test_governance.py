@@ -72,9 +72,9 @@ def test_federation_governance_report():
 
     assert report["evaluated_policies"] == 4  # 6 total - 2 runtime-only
     assert report["runtime_only_policies"] == 2  # city_autonomy_limits, bandwidth_quota
-    assert report["evaluated_nodes"] == 9  # 1 city + 8 agents
+    assert report["evaluated_nodes"] == 10  # 1 city + 9 agents
     assert report["non_compliant_nodes"] == 3  # agent-internet, steward-federation, steward-test
-    assert report["compliant_nodes"] == 6
-    assert report["compliance_ratio"] == round(6 / 9, 2)
+    assert report["compliant_nodes"] == 7
+    assert report["compliance_ratio"] == round(7 / 10, 2)
     # 3 nodes * (0.3 descriptor + 0.2 CI + 0.15 devcontainer) = 1.95
     assert report["total_trust_penalty"] == 1.95

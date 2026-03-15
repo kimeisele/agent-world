@@ -99,6 +99,19 @@ agents:
       - projection
       - protocol_governance
 
+  - agent_id: agent-research
+    repo: kimeisele/agent-research
+    status: active
+    registered_at: "2026-03-15"
+    trust_level: observed
+    owner_boundary: agent_research_surface
+    capabilities:
+      - authority_feed
+      - projection
+      - research_synthesis
+      - cross_domain_analysis
+      - open_inquiry
+
   - agent_id: steward-test
     repo: kimeisele/steward-test
     status: active

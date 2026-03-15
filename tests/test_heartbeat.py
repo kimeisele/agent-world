@@ -49,6 +49,8 @@ def test_world_heartbeat_writes_world_state(tmp_path):
     # Capability index
     assert "authority_feed" in state["capability_index"]
     assert "world_governance" in state["capability_index"]
+    assert "research_synthesis" in state["capability_index"]
+    assert "agent-research" in state["capability_index"]["research_synthesis"]
 
     persisted = json.loads(output.read_text())
     assert persisted["world_id"] == "agent-world"
