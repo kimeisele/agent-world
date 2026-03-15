@@ -13,7 +13,7 @@ def test_world_heartbeat_writes_world_state(tmp_path):
     assert path == output.resolve()
     assert state["summary"]["registered_cities"] == 1
     assert state["summary"]["founding_cities"] == 1
-    assert state["summary"]["active_policies"] == 3
+    assert state["summary"]["active_policies"] == 5  # 3 founding + 2 governance (CI, descriptor)
     assert state["warnings"] == ["missing_last_heartbeat:agent-city"]
     persisted = json.loads(output.read_text())
     assert persisted["world_id"] == "agent-world"
