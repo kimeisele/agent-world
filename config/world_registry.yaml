@@ -19,3 +19,77 @@ cities:
       - immigration
       - code_execution
       - federation_bridge
+
+agents:
+
+  - agent_id: agent-city
+    repo: kimeisele/agent-city
+    status: active
+    registered_at: "2026-03-15"
+    trust_level: observed
+    owner_boundary: agent_city_surface
+    capabilities:
+      - general
+
+  - agent_id: agent-internet
+    repo: kimeisele/agent-internet
+    status: active
+    registered_at: "2026-03-15"
+    trust_level: observed
+    owner_boundary: agent_internet_surface
+    capabilities:
+      - general
+
+  - agent_id: agent-template
+    repo: kimeisele/agent-template
+    status: active
+    registered_at: "2026-03-15"
+    trust_level: observed
+    owner_boundary: agent_template_surface
+    capabilities:
+      - general
+
+  - agent_id: agent-world
+    repo: kimeisele/agent-world
+    status: active
+    registered_at: "2026-03-15"
+    trust_level: observed
+    owner_boundary: world_governance_surface
+    capabilities:
+      - general
+
+  - agent_id: steward
+    repo: kimeisele/steward
+    status: active
+    registered_at: "2026-03-15"
+    trust_level: observed
+    owner_boundary: steward_surface
+    capabilities:
+      - general
+
+  - agent_id: steward-federation
+    repo: kimeisele/steward-federation
+    status: active
+    registered_at: "2026-03-15"
+    trust_level: observed
+    owner_boundary: steward_federation_surface
+    capabilities:
+      - general
+
+  - agent_id: steward-protocol
+    repo: kimeisele/steward-protocol
+    status: active
+    registered_at: "2026-03-15"
+    trust_level: observed
+    owner_boundary: protocol_governance
+    capabilities:
+      - general
+
+  - agent_id: steward-test
+    repo: kimeisele/steward-test
+    status: active
+    registered_at: "2026-03-15"
+    trust_level: observed
+    owner_boundary: steward_test_surface
+    capabilities:
+      - general
