@@ -217,16 +217,22 @@ def export_surface_metadata(*, base_path: Path | None = None) -> dict[str, Any]:
     }
 
 
-def export_authority_bundle(*, base_path: Path | None = None, source_sha: str | None = None, generated_at: float | None = None) -> dict[str, Any]:
-    root = repo_root(base_path)
-    timestamp = float(time.time() if generated_at is None else generated_at)
-    effective_source_sha = str(source_sha or _source_sha(root))
-    artifacts = {
+def _compute_artifact_payloads(root: Path) -> dict[str, tuple[str, dict[str, Any]]]:
+    """Compute all 4 export payloads exactly once. Returns {kind: (relative_path, payload)}."""
+    return {
         "canonical_surface": (".authority-exports/canonical-surface.json", export_canonical_surface(base_path=root)),
         "public_summary_registry": (".authority-exports/public-summary-registry.json", export_public_summary_registry(base_path=root)),
         "source_surface_registry": (".authority-exports/source-surface-registry.json", export_source_surface_registry(base_path=root)),
         "surface_metadata": (".authority-exports/surface-metadata.json", export_surface_metadata(base_path=root)),
     }
+
+
+def _build_bundle_envelope(
+    artifacts: dict[str, tuple[str, dict[str, Any]]],
+    effective_source_sha: str,
+    timestamp: float,
+) -> dict[str, Any]:
+    """Build the bundle metadata envelope from pre-computed artifact payloads."""
     authority_exports = []
     artifact_paths = {}
     for export_kind, (artifact_uri, payload) in artifacts.items():
@@ -262,26 +268,26 @@ def export_authority_bundle(*, base_path: Path | None = None, source_sha: str | 
     }
 
 
+def export_authority_bundle(*, base_path: Path | None = None, source_sha: str | None = None, generated_at: float | None = None) -> dict[str, Any]:
+    root = repo_root(base_path)
+    timestamp = float(time.time() if generated_at is None else generated_at)
+    effective_source_sha = str(source_sha or _source_sha(root))
+    artifacts = _compute_artifact_payloads(root)
+    return _build_bundle_envelope(artifacts, effective_source_sha, timestamp)
+
+
 def write_authority_bundle(*, base_path: Path | None = None, output_dir: Path | None = None, source_sha: str | None = None, generated_at: float | None = None) -> tuple[Path, dict[str, Any]]:
     root = repo_root(base_path)
     target_root = Path(output_dir).resolve() if output_dir is not None else root
-    bundle = export_authority_bundle(base_path=root, source_sha=source_sha, generated_at=generated_at)
-    exports_dir = target_root / ".authority-exports"
-    exports_dir.mkdir(parents=True, exist_ok=True)
-    for relative_path in bundle["artifact_paths"].values():
-        artifact_payload = next(
-            payload
-            for payload in (
-                export_canonical_surface(base_path=root),
-                export_public_summary_registry(base_path=root),
-                export_source_surface_registry(base_path=root),
-                export_surface_metadata(base_path=root),
-            )
-            if relative_path.endswith(payload["kind"].replace("_", "-") + ".json")
-        )
+    timestamp = float(time.time() if generated_at is None else generated_at)
+    effective_source_sha = str(source_sha or _source_sha(root))
+    # Single computation pass for everything.
+    artifacts = _compute_artifact_payloads(root)
+    bundle = _build_bundle_envelope(artifacts, effective_source_sha, timestamp)
+    for _kind, (relative_path, payload) in artifacts.items():
         target = target_root / relative_path
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(json.dumps(artifact_payload, indent=2, sort_keys=True) + "\n")
+        target.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
     bundle_path = target_root / ".authority-export-bundle.json"
     bundle_path.write_text(json.dumps(bundle, indent=2, sort_keys=True) + "\n")
     return bundle_path, bundle
@@ -290,22 +296,19 @@ def write_authority_bundle(*, base_path: Path | None = None, output_dir: Path | 
 def write_authority_feed(*, base_path: Path | None = None, output_dir: Path | None = None, source_sha: str | None = None, generated_at: float | None = None) -> tuple[Path, dict[str, Any]]:
     root = repo_root(base_path)
     target_root = Path(output_dir).resolve() if output_dir is not None else root / ".authority-feed"
-    bundle = export_authority_bundle(base_path=root, source_sha=source_sha, generated_at=generated_at)
-    effective_source_sha = str(bundle.get("source_sha", "")).strip() or "working-tree"
+    timestamp = float(time.time() if generated_at is None else generated_at)
+    effective_source_sha = str(source_sha or _source_sha(root))
+    # Single computation pass — artifacts computed once, used for bundle + file writes.
+    artifacts = _compute_artifact_payloads(root)
+    bundle = _build_bundle_envelope(artifacts, effective_source_sha, timestamp)
     bundle_root = target_root / "bundles" / effective_source_sha
-    artifact_payloads = {
-        ".authority-exports/canonical-surface.json": export_canonical_surface(base_path=root),
-        ".authority-exports/public-summary-registry.json": export_public_summary_registry(base_path=root),
-        ".authority-exports/source-surface-registry.json": export_source_surface_registry(base_path=root),
-        ".authority-exports/surface-metadata.json": export_surface_metadata(base_path=root),
-    }
     artifacts_manifest: dict[str, dict[str, str]] = {}
-    for relative_path, payload in artifact_payloads.items():
+    for kind, (relative_path, payload) in artifacts.items():
         file_sha = _write_json(bundle_root / relative_path, payload)
         artifacts_manifest[relative_path] = {
             "path": str(Path("bundles") / effective_source_sha / relative_path),
             "sha256": file_sha,
-            "export_kind": next(kind for kind, uri in bundle["artifact_paths"].items() if uri == relative_path),
+            "export_kind": kind,
         }
     bundle_path = bundle_root / "source-authority-bundle.json"
     bundle_sha = _write_json(bundle_path, bundle)

@@ -25,7 +25,23 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     if args.command == "heartbeat":
         path, state = run_world_heartbeat(base_path=args.repo_root, output_path=args.output)
-        print(json.dumps({"output": str(path), "summary": state["summary"], "warnings": state["warnings"]}, indent=2))
+        health = state.get("federation_health", {})
+        gov = state.get("governance", {})
+        print(json.dumps({
+            "output": str(path),
+            "summary": state["summary"],
+            "federation_health": {
+                "health_ratio": health.get("health_ratio"),
+                "active_nodes": health.get("active_nodes"),
+                "descriptor_incomplete": health.get("descriptor_incomplete"),
+            },
+            "governance": {
+                "compliance_ratio": gov.get("compliance_ratio"),
+                "non_compliant_nodes": gov.get("non_compliant_nodes"),
+                "total_trust_penalty": gov.get("total_trust_penalty"),
+            },
+            "warnings": state["warnings"],
+        }, indent=2))
         return 0
     if args.command == "export-authority-bundle":
         path, bundle = write_authority_bundle(base_path=args.repo_root, output_dir=args.output_dir)

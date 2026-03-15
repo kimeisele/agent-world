@@ -8,19 +8,94 @@ from pathlib import Path
 from typing import Any
 
 from .config import load_yaml, repo_root
+from .governance import evaluate_federation_governance
 from .registry import load_world_registry
+from .schema import validate_policies_or_raise
+
+
+def _collect_capability_index(
+    cities: tuple, agents: tuple,
+) -> dict[str, list[str]]:
+    """Map each capability to the node IDs that provide it (deduplicated)."""
+    index: dict[str, set[str]] = {}
+    for city in cities:
+        for cap in city.capabilities:
+            index.setdefault(cap, set()).add(city.city_id)
+    for agent in agents:
+        for cap in agent.capabilities:
+            index.setdefault(cap, set()).add(agent.agent_id)
+    return {k: sorted(v) for k, v in sorted(index.items())}
+
+
+def _build_federation_health(
+    cities: tuple, agents: tuple,
+) -> dict[str, Any]:
+    """Per-node health + descriptor status summary."""
+    nodes: list[dict[str, Any]] = []
+
+    for city in cities:
+        nodes.append({
+            "node_id": city.city_id,
+            "node_type": "city",
+            "status": city.status,
+            "trust_level": city.trust_level,
+            "has_heartbeat": city.last_heartbeat is not None,
+            "descriptor_complete": "descriptor_incomplete" not in city.capabilities,
+            "capability_count": len(city.capabilities),
+        })
+
+    for agent in agents:
+        nodes.append({
+            "node_id": agent.agent_id,
+            "node_type": "agent",
+            "status": agent.status,
+            "trust_level": agent.trust_level,
+            "has_heartbeat": True,  # agents don't have heartbeat field — always considered present
+            "descriptor_complete": "descriptor_incomplete" not in agent.capabilities,
+            "capability_count": len(agent.capabilities),
+        })
+
+    total = len(nodes)
+    descriptor_complete = sum(1 for n in nodes if n["descriptor_complete"])
+    active = sum(1 for n in nodes if n["status"] in ("alive", "active"))
+
+    return {
+        "total_nodes": total,
+        "active_nodes": active,
+        "descriptor_complete": descriptor_complete,
+        "descriptor_incomplete": total - descriptor_complete,
+        "health_ratio": round(active / total, 2) if total else 0.0,
+        "nodes": nodes,
+    }
 
 
 def build_world_state(*, base_path: Path | None = None, now: datetime | None = None) -> dict[str, Any]:
     root = repo_root(base_path)
     registry = load_world_registry(base_path=root)
     world_config = load_yaml("config/world.yaml", base_path=root)
-    policies = load_yaml("config/world_policies.yaml", base_path=root).get("policies") or []
+    policies_payload = load_yaml("config/world_policies.yaml", base_path=root)
+    validate_policies_or_raise(policies_payload)
+    policies = policies_payload.get("policies") or []
     now_utc = (now or datetime.now(timezone.utc)).isoformat()
+
     warnings = [f"missing_last_heartbeat:{city.city_id}" for city in registry.cities if not city.last_heartbeat]
+    for agent in registry.agents:
+        if "descriptor_incomplete" in agent.capabilities:
+            warnings.append(f"descriptor_incomplete:{agent.agent_id}")
+
+    federation_health = _build_federation_health(registry.cities, registry.agents)
+    capability_index = _collect_capability_index(registry.cities, registry.agents)
+    governance = evaluate_federation_governance(registry, policies)
+
+    # Surface non-compliant nodes as warnings
+    for node in governance["nodes"]:
+        if not node["compliant"]:
+            for v in node["violations"]:
+                warnings.append(f"policy_violation:{node['node_id']}:{v['policy_id']}")
+
     return {
         "kind": "world_state",
-        "version": 2,
+        "version": 4,
         "world_id": registry.world_id,
         "generated_at_utc": now_utc,
         "world": world_config.get("world") or {},
@@ -31,6 +106,9 @@ def build_world_state(*, base_path: Path | None = None, now: datetime | None = N
             "founding_cities": len([city for city in registry.cities if city.trust_level == "founding"]),
             "active_policies": len(policies),
         },
+        "federation_health": federation_health,
+        "governance": governance,
+        "capability_index": capability_index,
         "cities": [city.to_payload() for city in registry.cities],
         "agents": [agent.to_payload() for agent in registry.agents],
         "warnings": warnings,
