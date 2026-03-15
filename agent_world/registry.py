@@ -48,10 +48,11 @@ class AgentRecord:
     registered_at: str
     trust_level: str
     owner_boundary: str
+    role: str | None
     capabilities: tuple[str, ...]
 
     def to_payload(self) -> dict[str, object]:
-        return {
+        payload: dict[str, object] = {
             "agent_id": self.agent_id,
             "repo": self.repo,
             "status": self.status,
@@ -60,6 +61,9 @@ class AgentRecord:
             "owner_boundary": self.owner_boundary,
             "capabilities": list(self.capabilities),
         }
+        if self.role:
+            payload["role"] = self.role
+        return payload
 
 
 @dataclass(frozen=True, slots=True)
@@ -128,6 +132,7 @@ def load_world_registry(*, base_path=None, validate: bool = True) -> WorldRegist
                 registered_at=str(item.get("registered_at") or "").strip(),
                 trust_level=str(item.get("trust_level") or "").strip(),
                 owner_boundary=str(item.get("owner_boundary") or "").strip(),
+                role=item.get("role"),
                 capabilities=tuple(item.get("capabilities") or []),
             )
             for item in agents_payload

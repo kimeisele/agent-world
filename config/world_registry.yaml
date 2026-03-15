@@ -22,89 +22,119 @@ cities:
 
 agents:
 
-  - agent_id: agent-city
-    repo: kimeisele/agent-city
-    status: active
-    registered_at: "2026-03-15"
-    trust_level: observed
-    owner_boundary: agent_city_surface
-    capabilities:
-      - authority_feed
-      - projection
-      - governance
-      - code_execution
-
-  - agent_id: agent-internet
-    repo: kimeisele/agent-internet
-    status: active
-    registered_at: "2026-03-15"
-    trust_level: observed
-    owner_boundary: agent_internet_surface
-    capabilities:
-      - projection_host
-      - descriptor_incomplete
-
-  - agent_id: agent-template
-    repo: kimeisele/agent-template
-    status: active
-    registered_at: "2026-03-15"
-    trust_level: observed
-    owner_boundary: agent_template_surface
-    capabilities:
-      - authority_feed
-      - projection
-      - scaffolding
-
+  # --- WORLD ARCHITECT ---
   - agent_id: agent-world
     repo: kimeisele/agent-world
     status: active
     registered_at: "2026-03-15"
-    trust_level: observed
+    trust_level: founding
     owner_boundary: world_governance_surface
+    role: world_architect
     capabilities:
       - authority_feed
       - projection
       - world_governance
       - registry
+      - devcontainer_ready
 
+  # --- OPERATOR (executes world directives across repos) ---
   - agent_id: steward
     repo: kimeisele/steward
     status: active
     registered_at: "2026-03-15"
     trust_level: observed
     owner_boundary: steward_surface
+    role: operator
     capabilities:
       - authority_feed
       - projection
       - orchestration
 
-  - agent_id: steward-federation
-    repo: kimeisele/steward-federation
-    status: active
-    registered_at: "2026-03-15"
-    trust_level: observed
-    owner_boundary: steward_federation_surface
-    capabilities:
-      - federation_tooling
-      - descriptor_incomplete
-
+  # --- SUBSTRATE (identity, capability primitives, Nadi protocol) ---
   - agent_id: steward-protocol
     repo: kimeisele/steward-protocol
     status: active
     registered_at: "2026-03-15"
     trust_level: observed
     owner_boundary: protocol_governance
+    role: substrate
     capabilities:
       - authority_feed
       - projection
       - protocol_governance
 
+  # --- TRANSPORT HUB (federation message relay) ---
+  - agent_id: steward-federation
+    repo: kimeisele/steward-federation
+    status: active
+    registered_at: "2026-03-15"
+    trust_level: observed
+    owner_boundary: steward_federation_surface
+    role: transport_hub
+    capabilities:
+      - federation_tooling
+      - transport_relay
+      - descriptor_incomplete
+
+  # --- EXTERNAL GATEWAY (API surface) ---
+  - agent_id: steward-gateway
+    repo: kimeisele/steward-gateway
+    status: inactive
+    registered_at: "2026-03-15"
+    trust_level: untrusted
+    owner_boundary: steward_gateway_surface
+    role: external_gateway
+    capabilities:
+      - external_gateway
+      - descriptor_incomplete
+
+  # --- CITY RUNTIME (registered as agent too for governance tracking) ---
+  - agent_id: agent-city
+    repo: kimeisele/agent-city
+    status: active
+    registered_at: "2026-03-15"
+    trust_level: founding
+    owner_boundary: agent_city_surface
+    role: city_runtime
+    capabilities:
+      - authority_feed
+      - projection
+      - governance
+      - code_execution
+
+  # --- PROJECTION LAYER (public wiki/search) ---
+  - agent_id: agent-internet
+    repo: kimeisele/agent-internet
+    status: active
+    registered_at: "2026-03-15"
+    trust_level: observed
+    owner_boundary: agent_internet_surface
+    role: projection_layer
+    capabilities:
+      - projection_host
+      - descriptor_incomplete
+
+  # --- SCAFFOLDING (template for new federation nodes) ---
+  - agent_id: agent-template
+    repo: kimeisele/agent-template
+    status: active
+    registered_at: "2026-03-15"
+    trust_level: observed
+    owner_boundary: agent_template_surface
+    role: scaffolding
+    capabilities:
+      - authority_feed
+      - projection
+      - scaffolding
+
+  # --- RESEARCH FACULTY ---
   - agent_id: agent-research
     repo: kimeisele/agent-research
     status: active
     registered_at: "2026-03-15"
     trust_level: observed
     owner_boundary: agent_research_surface
+    role: research_faculty
     capabilities:
       - authority_feed
       - projection
@@ -112,12 +142,14 @@ agents:
       - cross_domain_analysis
       - open_inquiry
 
+  # --- TEST HARNESS ---
   - agent_id: steward-test
     repo: kimeisele/steward-test
     status: active
     registered_at: "2026-03-15"
     trust_level: observed
     owner_boundary: steward_test_surface
+    role: operator
     capabilities:
       - testing
       - descriptor_incomplete
