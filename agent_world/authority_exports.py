@@ -17,8 +17,14 @@ AGENT_WORLD_PUBLIC_WIKI_BINDING_ID = "agent-world-public-wiki"
 AUTHORITY_FEED_CONTRACT_VERSION = 1
 
 
+_DOCUMENT_SPECS_CACHE: list[dict[str, Any]] | None = None
+
+
 def _document_specs() -> list[dict[str, Any]]:
-    return [
+    global _DOCUMENT_SPECS_CACHE
+    if _DOCUMENT_SPECS_CACHE is not None:
+        return _DOCUMENT_SPECS_CACHE
+    specs = [
         {
             "document_id": "world_constitution",
             "title": "World Constitution",
@@ -81,6 +87,8 @@ def _document_specs() -> list[dict[str, Any]]:
             "labels": {"source_kind": "markdown", "nav_label": "Cross Repo Roadmap"},
         },
     ]
+    _DOCUMENT_SPECS_CACHE = specs
+    return specs
 
 
 def _source_sha(root: Path) -> str:

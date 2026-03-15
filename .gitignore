@@ -11,3 +11,5 @@ build/
 data/world_state.json
 .authority-exports/
 .authority-export-bundle.json
+.authority-feed/
+.authority-feed-out/

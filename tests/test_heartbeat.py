@@ -14,7 +14,7 @@ def test_world_heartbeat_writes_world_state(tmp_path):
     assert state["version"] == 4
     assert state["summary"]["registered_cities"] == 1
     assert state["summary"]["founding_cities"] == 1
-    assert state["summary"]["active_policies"] == 5  # 3 founding + 2 governance (CI, descriptor)
+    assert state["summary"]["active_policies"] == 6  # 3 founding + 3 governance (CI, descriptor, devcontainer)
 
     # Warnings include missing heartbeat + descriptor_incomplete + policy violations
     assert "missing_last_heartbeat:agent-city" in state["warnings"]
@@ -34,12 +34,12 @@ def test_world_heartbeat_writes_world_state(tmp_path):
 
     # Governance section
     gov = state["governance"]
-    assert gov["evaluated_policies"] == 3  # 5 total - 2 runtime-only
+    assert gov["evaluated_policies"] == 4  # 6 total - 2 runtime-only
     assert gov["runtime_only_policies"] == 2
     assert gov["evaluated_nodes"] == state["summary"]["total_nodes"]
     assert gov["non_compliant_nodes"] == 3  # agent-internet, steward-federation, steward-test
     assert 0.0 <= gov["compliance_ratio"] <= 1.0
-    assert gov["total_trust_penalty"] == 1.5  # 3 nodes * (0.3 + 0.2)
+    assert gov["total_trust_penalty"] == 1.95  # 3 nodes * (0.3 + 0.2 + 0.15)
 
     # Verify trust scores are computed
     for node in gov["nodes"]:
@@ -49,6 +49,8 @@ def test_world_heartbeat_writes_world_state(tmp_path):
     # Capability index
     assert "authority_feed" in state["capability_index"]
     assert "world_governance" in state["capability_index"]
+    assert "research_synthesis" in state["capability_index"]
+    assert "agent-research" in state["capability_index"]["research_synthesis"]
 
     persisted = json.loads(output.read_text())
     assert persisted["world_id"] == "agent-world"
