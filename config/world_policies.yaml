@@ -11,3 +11,17 @@ policies:
     rule: No city may consume more than 30 percent of the shared federation message budget within one hour.
     enforcement: world_rate_limiter
     window_s: 3600
+
+  - id: federation_ci_required
+    rule: Federation repos must have CI that runs on pull_request. Repos without PR-triggered CI receive trust penalty.
+    enforcement: trust_penalty
+    trust_penalty: 0.2
+    verification: steward_diagnostic
+    remediation: agent_template_ci_workflow
+
+  - id: federation_descriptor_required
+    rule: Federation repos must have .well-known/agent-federation.json. Missing descriptor means invisible to the network.
+    enforcement: trust_penalty
+    trust_penalty: 0.3
+    verification: steward_diagnostic
+    remediation: steward_healer
