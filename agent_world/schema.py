@@ -32,6 +32,8 @@ KNOWN_AGENT_CAPABILITIES = {
     "orchestration",
     "protocol_governance",
     "federation_tooling",
+    "transport_relay",
+    "external_gateway",
     "scaffolding",
     "testing",
     "governance",
@@ -41,6 +43,19 @@ KNOWN_AGENT_CAPABILITIES = {
     "research_synthesis",
     "cross_domain_analysis",
     "open_inquiry",
+}
+
+# Valid federation roles (optional annotation on agents/cities).
+VALID_AGENT_ROLES = {
+    "world_architect",
+    "operator",
+    "substrate",
+    "transport_hub",
+    "external_gateway",
+    "city_runtime",
+    "projection_layer",
+    "scaffolding",
+    "research_faculty",
 }
 
 # ---------------------------------------------------------------------------

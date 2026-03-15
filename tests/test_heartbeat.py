@@ -21,6 +21,7 @@ def test_world_heartbeat_writes_world_state(tmp_path):
     assert "descriptor_incomplete:agent-internet" in state["warnings"]
     assert "descriptor_incomplete:steward-federation" in state["warnings"]
     assert "descriptor_incomplete:steward-test" in state["warnings"]
+    assert "descriptor_incomplete:steward-gateway" in state["warnings"]
     assert "policy_violation:agent-internet:federation_descriptor_required" in state["warnings"]
     assert "policy_violation:agent-internet:federation_ci_required" in state["warnings"]
 
@@ -28,7 +29,7 @@ def test_world_heartbeat_writes_world_state(tmp_path):
     health = state["federation_health"]
     assert health["total_nodes"] == state["summary"]["total_nodes"]
     assert health["active_nodes"] >= 1
-    assert health["descriptor_incomplete"] == 3
+    assert health["descriptor_incomplete"] == 4  # agent-internet, steward-federation, steward-test, steward-gateway
     assert 0.0 <= health["health_ratio"] <= 1.0
     assert len(health["nodes"]) == health["total_nodes"]
 
@@ -37,9 +38,9 @@ def test_world_heartbeat_writes_world_state(tmp_path):
     assert gov["evaluated_policies"] == 4  # 6 total - 2 runtime-only
     assert gov["runtime_only_policies"] == 2
     assert gov["evaluated_nodes"] == state["summary"]["total_nodes"]
-    assert gov["non_compliant_nodes"] == 3  # agent-internet, steward-federation, steward-test
+    assert gov["non_compliant_nodes"] == 4  # agent-internet, steward-federation, steward-test, steward-gateway
     assert 0.0 <= gov["compliance_ratio"] <= 1.0
-    assert gov["total_trust_penalty"] == 1.95  # 3 nodes * (0.3 + 0.2 + 0.15)
+    assert gov["total_trust_penalty"] == 2.6  # 4 nodes * (0.3 + 0.2 + 0.15)
 
     # Verify trust scores are computed
     for node in gov["nodes"]:
