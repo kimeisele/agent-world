@@ -9,6 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from .config import load_yaml
+from .schema import validate_registry_or_raise
 
 
 @dataclass(frozen=True, slots=True)
@@ -93,8 +94,10 @@ class WorldRegistry:
         return sorted(repos)
 
 
-def load_world_registry(*, base_path=None) -> WorldRegistry:
+def load_world_registry(*, base_path=None, validate: bool = True) -> WorldRegistry:
     payload = load_yaml("config/world_registry.yaml", base_path=base_path)
+    if validate:
+        validate_registry_or_raise(payload)
     world = payload.get("world") or {}
     cities_payload = payload.get("cities") or []
     agents_payload = payload.get("agents") or []

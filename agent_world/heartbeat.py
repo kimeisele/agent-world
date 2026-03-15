@@ -14,14 +14,14 @@ from .registry import load_world_registry
 def _collect_capability_index(
     cities: tuple, agents: tuple,
 ) -> dict[str, list[str]]:
-    """Map each capability to the node IDs that provide it."""
-    index: dict[str, list[str]] = {}
+    """Map each capability to the node IDs that provide it (deduplicated)."""
+    index: dict[str, set[str]] = {}
     for city in cities:
         for cap in city.capabilities:
-            index.setdefault(cap, []).append(city.city_id)
+            index.setdefault(cap, set()).add(city.city_id)
     for agent in agents:
         for cap in agent.capabilities:
-            index.setdefault(cap, []).append(agent.agent_id)
+            index.setdefault(cap, set()).add(agent.agent_id)
     return {k: sorted(v) for k, v in sorted(index.items())}
 
 
