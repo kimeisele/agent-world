@@ -22,6 +22,7 @@ def test_world_heartbeat_writes_world_state(tmp_path):
     assert "descriptor_incomplete:steward-federation" in state["warnings"]
     assert "descriptor_incomplete:steward-test" in state["warnings"]
     assert "policy_violation:agent-internet:federation_descriptor_required" in state["warnings"]
+    assert "policy_violation:agent-internet:federation_ci_required" in state["warnings"]
 
     # Federation health section
     health = state["federation_health"]
@@ -33,11 +34,12 @@ def test_world_heartbeat_writes_world_state(tmp_path):
 
     # Governance section
     gov = state["governance"]
-    assert gov["evaluated_policies"] == 5
+    assert gov["evaluated_policies"] == 3  # 5 total - 2 runtime-only
+    assert gov["runtime_only_policies"] == 2
     assert gov["evaluated_nodes"] == state["summary"]["total_nodes"]
     assert gov["non_compliant_nodes"] == 3  # agent-internet, steward-federation, steward-test
     assert 0.0 <= gov["compliance_ratio"] <= 1.0
-    assert gov["total_trust_penalty"] > 0
+    assert gov["total_trust_penalty"] == 1.5  # 3 nodes * (0.3 + 0.2)
 
     # Verify trust scores are computed
     for node in gov["nodes"]:

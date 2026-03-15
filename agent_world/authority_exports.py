@@ -227,11 +227,12 @@ def _compute_artifact_payloads(root: Path) -> dict[str, tuple[str, dict[str, Any
     }
 
 
-def export_authority_bundle(*, base_path: Path | None = None, source_sha: str | None = None, generated_at: float | None = None) -> dict[str, Any]:
-    root = repo_root(base_path)
-    timestamp = float(time.time() if generated_at is None else generated_at)
-    effective_source_sha = str(source_sha or _source_sha(root))
-    artifacts = _compute_artifact_payloads(root)
+def _build_bundle_envelope(
+    artifacts: dict[str, tuple[str, dict[str, Any]]],
+    effective_source_sha: str,
+    timestamp: float,
+) -> dict[str, Any]:
+    """Build the bundle metadata envelope from pre-computed artifact payloads."""
     authority_exports = []
     artifact_paths = {}
     for export_kind, (artifact_uri, payload) in artifacts.items():
@@ -267,22 +268,26 @@ def export_authority_bundle(*, base_path: Path | None = None, source_sha: str | 
     }
 
 
-def _write_bundle_artifacts(
-    target_root: Path, root: Path, bundle: dict[str, Any],
-) -> None:
-    """Write the 4 export artifacts using a single computation pass."""
-    payloads = _compute_artifact_payloads(root)
-    for _kind, (relative_path, payload) in payloads.items():
-        target = target_root / relative_path
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
+def export_authority_bundle(*, base_path: Path | None = None, source_sha: str | None = None, generated_at: float | None = None) -> dict[str, Any]:
+    root = repo_root(base_path)
+    timestamp = float(time.time() if generated_at is None else generated_at)
+    effective_source_sha = str(source_sha or _source_sha(root))
+    artifacts = _compute_artifact_payloads(root)
+    return _build_bundle_envelope(artifacts, effective_source_sha, timestamp)
 
 
 def write_authority_bundle(*, base_path: Path | None = None, output_dir: Path | None = None, source_sha: str | None = None, generated_at: float | None = None) -> tuple[Path, dict[str, Any]]:
     root = repo_root(base_path)
     target_root = Path(output_dir).resolve() if output_dir is not None else root
-    bundle = export_authority_bundle(base_path=root, source_sha=source_sha, generated_at=generated_at)
-    _write_bundle_artifacts(target_root, root, bundle)
+    timestamp = float(time.time() if generated_at is None else generated_at)
+    effective_source_sha = str(source_sha or _source_sha(root))
+    # Single computation pass for everything.
+    artifacts = _compute_artifact_payloads(root)
+    bundle = _build_bundle_envelope(artifacts, effective_source_sha, timestamp)
+    for _kind, (relative_path, payload) in artifacts.items():
+        target = target_root / relative_path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
     bundle_path = target_root / ".authority-export-bundle.json"
     bundle_path.write_text(json.dumps(bundle, indent=2, sort_keys=True) + "\n")
     return bundle_path, bundle
@@ -291,12 +296,14 @@ def write_authority_bundle(*, base_path: Path | None = None, output_dir: Path | 
 def write_authority_feed(*, base_path: Path | None = None, output_dir: Path | None = None, source_sha: str | None = None, generated_at: float | None = None) -> tuple[Path, dict[str, Any]]:
     root = repo_root(base_path)
     target_root = Path(output_dir).resolve() if output_dir is not None else root / ".authority-feed"
-    bundle = export_authority_bundle(base_path=root, source_sha=source_sha, generated_at=generated_at)
-    effective_source_sha = str(bundle.get("source_sha", "")).strip() or "working-tree"
+    timestamp = float(time.time() if generated_at is None else generated_at)
+    effective_source_sha = str(source_sha or _source_sha(root))
+    # Single computation pass — artifacts computed once, used for bundle + file writes.
+    artifacts = _compute_artifact_payloads(root)
+    bundle = _build_bundle_envelope(artifacts, effective_source_sha, timestamp)
     bundle_root = target_root / "bundles" / effective_source_sha
-    payloads = _compute_artifact_payloads(root)
     artifacts_manifest: dict[str, dict[str, str]] = {}
-    for kind, (relative_path, payload) in payloads.items():
+    for kind, (relative_path, payload) in artifacts.items():
         file_sha = _write_json(bundle_root / relative_path, payload)
         artifacts_manifest[relative_path] = {
             "path": str(Path("bundles") / effective_source_sha / relative_path),

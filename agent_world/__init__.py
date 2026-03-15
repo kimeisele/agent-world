@@ -3,7 +3,7 @@
 from .authority_exports import export_authority_bundle, write_authority_bundle
 from .governance import evaluate_federation_governance
 from .heartbeat import build_world_state, run_world_heartbeat
-from .protocol import CityReport, FederationDirective
+from .protocol import CityReport, FederationDirective, ProtocolValidationError
 from .registry import AgentRecord, CityRecord, WorldRegistry, load_world_registry
 from .schema import (
     PolicyValidationError,
@@ -20,6 +20,7 @@ __all__ = [
     "CityReport",
     "FederationDirective",
     "PolicyValidationError",
+    "ProtocolValidationError",
     "RegistryValidationError",
     "WorldRegistry",
     "build_world_state",

@@ -21,31 +21,34 @@ def _policies():
 def test_compliant_node_has_no_violations():
     registry = load_world_registry(base_path=_root())
     agent = registry.agent_by_id("agent-world")  # has full descriptor
-    violations = evaluate_node_compliance(agent, _policies())
+    violations, advisories = evaluate_node_compliance(agent, _policies())
     assert violations == []
+    assert advisories == []
 
 
-def test_descriptor_incomplete_node_has_violation():
+def test_descriptor_incomplete_node_gets_both_violations():
     registry = load_world_registry(base_path=_root())
     agent = registry.agent_by_id("agent-internet")  # descriptor_incomplete
-    violations = evaluate_node_compliance(agent, _policies())
-    assert len(violations) == 1
-    assert violations[0]["policy_id"] == "federation_descriptor_required"
-    assert violations[0]["trust_penalty"] == 0.3
+    violations, advisories = evaluate_node_compliance(agent, _policies())
+    policy_ids = {v["policy_id"] for v in violations}
+    # descriptor_incomplete triggers BOTH descriptor + CI violations
+    assert "federation_descriptor_required" in policy_ids
+    assert "federation_ci_required" in policy_ids
+    assert len(violations) == 2
 
 
-def test_trust_score_with_penalty():
+def test_trust_score_with_both_penalties():
     registry = load_world_registry(base_path=_root())
-    agent = registry.agent_by_id("agent-internet")  # observed (base 0.5) - 0.3 penalty
-    violations = evaluate_node_compliance(agent, _policies())
+    agent = registry.agent_by_id("agent-internet")  # observed (0.5) - 0.3 - 0.2 = 0.0
+    violations, _ = evaluate_node_compliance(agent, _policies())
     score = compute_trust_score(agent, violations)
-    assert score == 0.2
+    assert score == 0.0
 
 
 def test_trust_score_without_penalty():
     registry = load_world_registry(base_path=_root())
     agent = registry.agent_by_id("agent-world")  # observed (base 0.5), no violations
-    violations = evaluate_node_compliance(agent, _policies())
+    violations, _ = evaluate_node_compliance(agent, _policies())
     score = compute_trust_score(agent, violations)
     assert score == 0.5
 
@@ -53,9 +56,12 @@ def test_trust_score_without_penalty():
 def test_founding_city_trust_score():
     registry = load_world_registry(base_path=_root())
     city = registry.city_by_id("agent-city")  # founding (base 1.0), no violations
-    violations = evaluate_node_compliance(city, _policies())
+    violations, advisories = evaluate_node_compliance(city, _policies())
     score = compute_trust_score(city, violations)
     assert score == 1.0
+    assert violations == []
+    # Founding city has trust >= verified, so no visa advisory
+    assert advisories == []
 
 
 def test_federation_governance_report():
@@ -63,9 +69,11 @@ def test_federation_governance_report():
     policies = _policies()
     report = evaluate_federation_governance(registry, policies)
 
-    assert report["evaluated_policies"] == 5
+    assert report["evaluated_policies"] == 3  # 5 total - 2 runtime-only
+    assert report["runtime_only_policies"] == 2  # city_autonomy_limits, bandwidth_quota
     assert report["evaluated_nodes"] == 9  # 1 city + 8 agents
     assert report["non_compliant_nodes"] == 3  # agent-internet, steward-federation, steward-test
     assert report["compliant_nodes"] == 6
     assert report["compliance_ratio"] == round(6 / 9, 2)
-    assert report["total_trust_penalty"] == 0.9  # 3 nodes * 0.3 each
+    # 3 nodes * (0.3 descriptor + 0.2 CI) = 1.5
+    assert report["total_trust_penalty"] == 1.5
