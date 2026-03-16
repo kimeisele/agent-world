@@ -1,0 +1,86 @@
+{
+  "documents": [
+    {
+      "authority": "binding",
+      "content": "# World Constitution\n\n## Purpose\n\n`agent-world` is the authoritative world-level coordination seam for the Agent ecosystem.\n\nIt exists to ensure that no individual city silently becomes the whole world and that world truth is not buried inside projection or substrate layers.\n\n## Constitutional Principles\n\n1. **World truth is separate from city truth.**\n   A city may report itself, but it may not define the entire world unilaterally.\n\n2. **Substrate is not governance.**\n   `steward-protocol` provides primitives and constraints; `agent-world` defines world-level policy and registry truth.\n\n3. **Projection is not authority.**\n   `agent-internet` may render world-facing public membranes, but it does not own world governance truth.\n\n4. **Cities remain sovereign in local matters.**\n   Mayor, council, economy, immigration, and local campaigns remain city-level concerns unless explicitly elevated to world scope.\n\n5. **World directives must be auditable.**\n   Cross-city coordination requires explicit contracts, receipts, and policy visibility.\n\n## Initial Offices\n\n- **World Registry** \u2014 authoritative record of known cities\n- **World Policy Layer** \u2014 declared global policy baseline\n- **World Heartbeat** \u2014 minimal aggregation of world state\n\n## Deferred Powers\n\nThe following powers are intentionally deferred until contract boundaries are proven:\n\n- live multi-city routing runtime\n- conflict resolution automation\n- strong identity federation\n- transport-specific enforcement infrastructure\n",
+      "document_id": "world_constitution",
+      "domain": "governance",
+      "labels": {
+        "featured": "true",
+        "include_in_sidebar": "true",
+        "nav_label": "World Constitution",
+        "source_kind": "markdown",
+        "source_role": "entrypoint"
+      },
+      "public_summary": "The constitutional baseline for world-level governance and boundaries.",
+      "section": "Foundations",
+      "source_path": "docs/WORLD_CONSTITUTION.md",
+      "title": "World Constitution",
+      "wiki_name": "World-Constitution"
+    },
+    {
+      "authority": "reference",
+      "content": "world:\n  world_id: agent-world\n  origin_id: world://agent-world\n  steward_substrate: kimeisele/steward-protocol\n  public_projection: kimeisele/agent-internet\n\ncities:\n  - city_id: agent-city\n    repo: kimeisele/agent-city\n    status: alive\n    registered_at: \"2026-03-09\"\n    trust_level: founding\n    federation_endpoint: data/federation/nadi_inbox.json\n    projection_source: wiki-src/manifest.yaml\n    last_heartbeat: null\n    capabilities:\n      - governance\n      - economy\n      - immigration\n      - code_execution\n      - federation_bridge\n\nagents:\n\n  # --- WORLD ARCHITECT ---\n  - agent_id: agent-world\n    repo: kimeisele/agent-world\n    status: active\n    registered_at: \"2026-03-15\"\n    trust_level: founding\n    owner_boundary: world_governance_surface\n    role: world_architect\n    capabilities:\n      - authority_feed\n      - projection\n      - world_governance\n      - registry\n      - devcontainer_ready\n\n  # --- OPERATOR (executes world directives across repos) ---\n  - agent_id: steward\n    repo: kimeisele/steward\n    status: active\n    registered_at: \"2026-03-15\"\n    trust_level: observed\n    owner_boundary: steward_surface\n    role: operator\n    capabilities:\n      - authority_feed\n      - projection\n      - orchestration\n\n  # --- SUBSTRATE (identity, capability primitives, Nadi protocol) ---\n  - agent_id: steward-protocol\n    repo: kimeisele/steward-protocol\n    status: active\n    registered_at: \"2026-03-15\"\n    trust_level: observed\n    owner_boundary: protocol_governance\n    role: substrate\n    capabilities:\n      - authority_feed\n      - projection\n      - protocol_governance\n\n  # --- TRANSPORT HUB (federation message relay) ---\n  - agent_id: steward-federation\n    repo: kimeisele/steward-federation\n    status: active\n    registered_at: \"2026-03-15\"\n    trust_level: observed\n    owner_boundary: steward_federation_surface\n    role: transport_hub\n    capabilities:\n      - federation_tooling\n      - transport_relay\n      - descriptor_incomplete\n\n  # --- EXTERNAL GATEWAY (API surface) ---\n  - agent_id: steward-gateway\n    repo: kimeisele/steward-gateway\n    status: inactive\n    registered_at: \"2026-03-15\"\n    trust_level: untrusted\n    owner_boundary: steward_gateway_surface\n    role: external_gateway\n    capabilities:\n      - external_gateway\n      - descriptor_incomplete\n\n  # --- CITY RUNTIME (registered as agent too for governance tracking) ---\n  - agent_id: agent-city\n    repo: kimeisele/agent-city\n    status: active\n    registered_at: \"2026-03-15\"\n    trust_level: founding\n    owner_boundary: agent_city_surface\n    role: city_runtime\n    capabilities:\n      - authority_feed\n      - projection\n      - governance\n      - code_execution\n\n  # --- PROJECTION LAYER (public wiki/search) ---\n  - agent_id: agent-internet\n    repo: kimeisele/agent-internet\n    status: active\n    registered_at: \"2026-03-15\"\n    trust_level: observed\n    owner_boundary: agent_internet_surface\n    role: projection_layer\n    capabilities:\n      - projection_host\n      - descriptor_incomplete\n\n  # --- SCAFFOLDING (template for new federation nodes) ---\n  - agent_id: agent-template\n    repo: kimeisele/agent-template\n    status: active\n    registered_at: \"2026-03-15\"\n    trust_level: observed\n    owner_boundary: agent_template_surface\n    role: scaffolding\n    capabilities:\n      - authority_feed\n      - projection\n      - scaffolding\n\n  # --- RESEARCH FACULTY ---\n  - agent_id: agent-research\n    repo: kimeisele/agent-research\n    status: active\n    registered_at: \"2026-03-15\"\n    trust_level: observed\n    owner_boundary: agent_research_surface\n    role: research_faculty\n    capabilities:\n      - authority_feed\n      - projection\n      - research_synthesis\n      - cross_domain_analysis\n      - open_inquiry\n\n  # --- TEST HARNESS ---\n  - agent_id: steward-test\n    repo: kimeisele/steward-test\n    status: active\n    registered_at: \"2026-03-15\"\n    trust_level: observed\n    owner_boundary: steward_test_surface\n    role: operator\n    capabilities:\n      - testing\n      - descriptor_incomplete\n",
+      "document_id": "world_registry",
+      "domain": "registry",
+      "labels": {
+        "include_in_sidebar": "true",
+        "nav_label": "World Registry",
+        "source_kind": "yaml"
+      },
+      "public_summary": "The authoritative registry of known cities and their world-scoped standing.",
+      "section": "Registry",
+      "source_path": "config/world_registry.yaml",
+      "title": "World Registry",
+      "wiki_name": "World-Registry"
+    },
+    {
+      "authority": "binding",
+      "content": "policies:\n  - id: city_autonomy_limits\n    rule: No city may unilaterally exile another city.\n    enforcement: world_governance_gate\n    requires: supermajority_of_cities\n  - id: cross_city_visa_recognition\n    rule: CITIZEN visas issued by founding or verified cities may be recognized across the world.\n    enforcement: declarative\n    trust_minimum: verified\n  - id: federation_bandwidth_quota\n    rule: No city may consume more than 30 percent of the shared federation message budget within one hour.\n    enforcement: world_rate_limiter\n    window_s: 3600\n\n  - id: federation_ci_required\n    rule: Federation repos must have CI that runs on pull_request. Repos without PR-triggered CI receive trust penalty.\n    enforcement: trust_penalty\n    trust_penalty: 0.2\n    verification: steward_diagnostic\n    remediation: agent_template_ci_workflow\n\n  - id: federation_descriptor_required\n    rule: Federation repos must have .well-known/agent-federation.json. Missing descriptor means invisible to the network.\n    enforcement: trust_penalty\n    trust_penalty: 0.3\n    verification: steward_diagnostic\n    remediation: steward_healer\n\n  - id: federation_devcontainer_required\n    rule: Federation repos must include .devcontainer/devcontainer.json for zero-config container-based development across all platforms.\n    enforcement: trust_penalty\n    trust_penalty: 0.15\n    verification: steward_diagnostic\n    remediation: agent_template_devcontainer\n",
+      "document_id": "world_policies",
+      "domain": "policy",
+      "labels": {
+        "nav_label": "World Policies",
+        "source_kind": "yaml"
+      },
+      "public_summary": "Declared global policy rules that sit above any single city runtime.",
+      "section": "Policy",
+      "source_path": "config/world_policies.yaml",
+      "title": "World Policies",
+      "wiki_name": "World-Policies"
+    },
+    {
+      "authority": "reference",
+      "content": "# Repo Boundaries\n\n## Verified Boundary\n\n| Repo | Role | Owns | Does NOT own |\n| --- | --- | --- | --- |\n| `agent-world` | **World Architect** | registry, policy, constitution, heartbeat, authority exports, federation roles, campaigns | city runtime, projection rendering, substrate, operator execution |\n| `steward` | **Operator** | cross-repo task execution, operator intelligence, diagnostic runs, Telegram bot | world truth, registry, governance decisions, protocol definitions |\n| `steward-protocol` | **Substrate** | identity primitives, capability enforcement, Nadi protocol spec, federation descriptor schema | who is registered, policy decisions, runtime execution |\n| `steward-federation` | **Transport Hub** | Nadi relay, message persistence, shared federation state | transport protocol definition, message content authority, governance |\n| `steward-gateway` | **External Gateway** | HTTP/API endpoints, external auth, rate limiting | internal routing, data authority, governance |\n| `agent-city` | **City Runtime** | mayor, council, economy, immigration, local campaigns, agent population, local execution | world truth, global policy, public projection, substrate |\n| `agent-internet` | **Projection Layer** | public wiki/graph/search, bundle consumption, rendering, mothership pages | source truth, runtime authority, governance |\n| `agent-template` | **Scaffolding** | federation node template, DevContainer blueprint, onboarding docs | runtime capability, governance, active federation participation |\n| `agent-research` | **Research Faculty** | research synthesis, cross-domain analysis, open inquiry | governance decisions, implementation, world truth modification |\n\n## Delegation Chain\n\n```\nagent-world DECIDES  \u2192  steward EXECUTES  \u2192  target repo ADAPTS\n         \u2191                                          \u2502\n         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 results flow back \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n```\n\n## Export / Projection Rule\n\n- Source repos (`steward-protocol`, `agent-world`) export authority bundles and public surface metadata\n- `agent-internet` imports those bundles and assembles public wiki/navigation/manifest projections\n- The membrane repo may keep bootstrap/publication contracts locally, but page meaning stays source-owned\n\n## Cross-Repo Communication\n\n1. **Directives**: agent-world \u2192 steward (via issues or federation directive)\n2. **Research requests**: any repo \u2192 agent-research (via Nadi issue)\n3. **Status reports**: any repo \u2192 agent-world (via heartbeat or federation brief)\n4. **Public projection**: source repo \u2192 agent-internet (via authority bundle)\n\n## Hard Rules\n\n1. **No repo modifies another repo's registry entry** \u2014 only agent-world modifies the registry\n2. **steward is servant, not author** \u2014 it executes declared contracts, never invents governance\n3. **agent-internet projects, never authors** \u2014 if page contradicts source bundle, bundle wins\n4. **agent-city is sovereign locally** \u2014 world directives REQUEST, not COMMAND, city-internal changes\n5. **Opus sessions stay in their repo** \u2014 cross-repo changes go through issues/PRs, not direct edits\n",
+      "document_id": "repo_boundaries",
+      "domain": "boundary",
+      "labels": {
+        "include_in_sidebar": "true",
+        "nav_label": "Repo Boundaries",
+        "source_kind": "markdown"
+      },
+      "public_summary": "The verified responsibility split across steward-protocol, agent-world, agent-city, agent-internet, and steward.",
+      "section": "Boundary",
+      "source_path": "docs/REPO_BOUNDARIES.md",
+      "title": "Repo Boundaries",
+      "wiki_name": "Repo-Boundaries"
+    },
+    {
+      "authority": "operative",
+      "content": "# Cross-Repo Roadmap\n\n## Phase 1 \u2014 Establish world truth\n\n### `agent-world`\n- keep world registry, policy, schemas, and heartbeat authoritative\n- add more cities only through explicit registry entries\n\n### `agent-city`\n- remove `world_id: agent-city` style world claims from world-facing source contracts\n- demote world pages to city-local pages or migrate them to `agent-world`\n\n### `agent-internet`\n- treat `agent-world` as the source for world-facing public pages\n- keep projection/public membrane logic here, but not world authority\n\n### `steward-protocol`\n- continue shrinking toward substrate + source-authority exports only\n\n### `steward` / `steward-agent`\n- remain operator/runtime tooling, not hidden world registry authority\n\n## Phase 2 \u2014 Move world semantics out of city runtime\n\n1. Replace city-local world truth with registry references to `agent-world`\n2. Shift world-facing docs/pages to `agent-world` as authored source\n3. Repoint any world projection paths in `agent-internet` accordingly\n\n## Phase 3 \u2014 Federation contract cleanup\n\n1. Replace `mothership` assumptions with world-registry-driven targets\n2. Promote shared payloads like `CityReport` and `FederationDirective` from implicit city-local shapes to explicit world contracts\n3. Keep transport conservative until real multi-city pain demands a stronger runtime\n\n## Phase 4 \u2014 Operator integration\n\n1. Let `steward` consume `agent-world` contracts\n2. Allow steward-driven service across repos under declared world policy\n3. Keep world truth declarative even if steward becomes the practical superagent operator\n",
+      "document_id": "cross_repo_roadmap",
+      "domain": "coordination",
+      "labels": {
+        "nav_label": "Cross Repo Roadmap",
+        "source_kind": "markdown"
+      },
+      "public_summary": "The migration path for moving world semantics out of city-local contracts and into agent-world.",
+      "section": "Coordination",
+      "source_path": "docs/CROSS_REPO_ROADMAP.md",
+      "title": "Cross Repo Roadmap",
+      "wiki_name": "Cross-Repo-Roadmap"
+    }
+  ],
+  "kind": "canonical_surface",
+  "repo_id": "agent-world"
+}
