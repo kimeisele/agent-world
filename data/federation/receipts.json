@@ -1,0 +1,10 @@
+[
+  {
+    "correlation_id": "",
+    "delivered_at": 1773670923.892879,
+    "envelope_id": "c9ed4b18-22b5-4ae2-81c4-29d5b3ebc713",
+    "operation": "heartbeat",
+    "source_city_id": "steward",
+    "target_city_id": "agent-world"
+  }
+]
