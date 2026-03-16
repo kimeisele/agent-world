@@ -1,0 +1,25 @@
+{
+  "identity": {
+    "city_id": "agent-world",
+    "slug": "agent-world",
+    "repo": "kimeisele/agent-world",
+    "public_key": ""
+  },
+  "endpoint": {
+    "city_id": "agent-world",
+    "transport": "filesystem",
+    "location": "data/federation"
+  },
+  "capabilities": [
+    "world-governance",
+    "federation-registry",
+    "role-assignment",
+    "authority-projection"
+  ],
+  "nadi": {
+    "outbox": "data/federation/nadi_outbox.json",
+    "inbox": "data/federation/nadi_inbox.json",
+    "reports": "data/federation/reports/",
+    "directives": "data/federation/directives/"
+  }
+}
