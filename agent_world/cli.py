@@ -22,6 +22,8 @@ def main(argv: list[str] | None = None) -> int:
     export_feed = subparsers.add_parser("export-authority-feed", help="write a versioned authority feed manifest plus bundle artifacts")
     export_feed.add_argument("--repo-root", type=Path, default=None)
     export_feed.add_argument("--output-dir", type=Path, default=None)
+    subparsers.add_parser("sync", help="run NADI federation sync cycle")
+    subparsers.add_parser("federation-status", help="show federation NADI status")
     args = parser.parse_args(argv)
     if args.command == "heartbeat":
         path, state = run_world_heartbeat(base_path=args.repo_root, output_path=args.output)
@@ -50,6 +52,20 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "export-authority-feed":
         path, manifest = write_authority_feed(base_path=args.repo_root, output_dir=args.output_dir)
         print(json.dumps({"output": str(path), "repo_id": manifest["source_repo_id"], "source_sha": manifest["source_sha"]}, indent=2))
+        return 0
+    if args.command == "sync":
+        from .federation import create_world_node
+
+        node = create_world_node()
+        stats = node.sync()
+        print(json.dumps(stats, indent=2))
+        return 0
+    if args.command == "federation-status":
+        from .federation import create_world_node
+
+        node = create_world_node()
+        stats = node.stats()
+        print(json.dumps(stats, indent=2))
         return 0
     return 1
 

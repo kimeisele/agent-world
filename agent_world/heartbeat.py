@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import logging
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -11,6 +12,8 @@ from .config import load_yaml, repo_root
 from .governance import evaluate_federation_governance
 from .registry import load_world_registry
 from .schema import validate_policies_or_raise
+
+log = logging.getLogger("agent_world.heartbeat")
 
 
 def _collect_capability_index(
@@ -121,4 +124,17 @@ def run_world_heartbeat(*, base_path: Path | None = None, output_path: Path | No
     destination = Path(output_path).resolve() if output_path is not None else root / "data/world_state.json"
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_text(json.dumps(state, indent=2) + "\n")
+
+    # Emit world state via NADI federation
+    try:
+        from agent_world.federation import create_world_node, emit_world_state
+
+        fed_dir = root / "data" / "federation"
+        node = create_world_node(fed_dir)
+        count = emit_world_state(node, state)
+        node.heartbeat(health=1.0, version=str(state.get("version", 0)))
+        log.info("NADI: emitted world_state_update to %d peers", count)
+    except Exception as exc:
+        log.warning("NADI emission failed (non-fatal): %s", exc)
+
     return destination, state
