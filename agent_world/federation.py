@@ -12,7 +12,6 @@ Receives:
 
 from __future__ import annotations
 
-import json
 import logging
 import time
 from pathlib import Path
@@ -20,13 +19,15 @@ from typing import Any
 
 from nadi_kit import NadiNode, NadiMessage
 
+_REPO_ROOT = Path(__file__).resolve().parent.parent
+
 log = logging.getLogger("agent_world.federation")
 
 
 def create_world_node(federation_dir: Path | None = None) -> NadiNode:
     """Create the NadiNode for agent-world."""
     if federation_dir is None:
-        federation_dir = Path("data/federation")
+        federation_dir = _REPO_ROOT / "data" / "federation"
     peer_json = federation_dir / "peer.json"
     node = NadiNode.from_peer_json(peer_json)
 
