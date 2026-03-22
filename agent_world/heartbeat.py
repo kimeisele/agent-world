@@ -127,12 +127,28 @@ def run_world_heartbeat(*, base_path: Path | None = None, output_path: Path | No
 
     # Emit world state via NADI federation
     try:
-        from agent_world.federation import create_world_node, emit_world_state
+        from agent_world.federation import create_world_node, emit_world_state, emit_policy_update
 
         fed_dir = root / "data" / "federation"
         node = create_world_node(fed_dir)
         count = emit_world_state(node, state)
         node.heartbeat(health=1.0, version=str(state.get("version", 0)))
+
+        # Broadcast policy violations if governance found any
+        governance = state.get("governance", {})
+        violations = [n for n in governance.get("nodes", []) if not n.get("compliant")]
+        if violations:
+            emit_policy_update(node, {
+                "violations": [{
+                    "node_id": n["node_id"],
+                    "policies": [v["policy_id"] for v in n.get("violations", [])],
+                } for n in violations],
+                "compliance_ratio": governance.get("compliance_ratio", 0),
+                "version": state.get("version", 0),
+                "issuer": "agent-world",
+            })
+            log.info("NADI: broadcasted %d policy violations", len(violations))
+
         sync_stats = node.sync()
         log.info("NADI: emitted world_state_update to %d peers, sync: %s", count, sync_stats)
     except Exception as exc:
