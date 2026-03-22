@@ -36,6 +36,9 @@ jobs:
           python-version: '3.11'
       - run: python -m pip install -e '.[dev]'
       - name: Run heartbeat + commit state
+        env:
+          GH_TOKEN: ${{ secrets.FEDERATION_PAT || secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.FEDERATION_PAT || secrets.GITHUB_TOKEN }}
         run: |
           python -m agent_world.cli heartbeat
           git config user.name "agent-world-bot"
