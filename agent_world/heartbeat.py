@@ -133,7 +133,8 @@ def run_world_heartbeat(*, base_path: Path | None = None, output_path: Path | No
         node = create_world_node(fed_dir)
         count = emit_world_state(node, state)
         node.heartbeat(health=1.0, version=str(state.get("version", 0)))
-        log.info("NADI: emitted world_state_update to %d peers", count)
+        sync_stats = node.sync()
+        log.info("NADI: emitted world_state_update to %d peers, sync: %s", count, sync_stats)
     except Exception as exc:
         log.warning("NADI emission failed (non-fatal): %s", exc)
 
