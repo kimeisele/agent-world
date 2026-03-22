@@ -125,33 +125,22 @@ def run_world_heartbeat(*, base_path: Path | None = None, output_path: Path | No
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_text(json.dumps(state, indent=2) + "\n")
 
-    # Emit world state via NADI federation
+    # Legislator: Head Agent cognitive cycle (replaces simple emit)
     try:
-        from agent_world.federation import create_world_node, emit_world_state, emit_policy_update
-
-        fed_dir = root / "data" / "federation"
-        node = create_world_node(fed_dir)
-        count = emit_world_state(node, state)
-        node.heartbeat(health=1.0, version=str(state.get("version", 0)))
-
-        # Broadcast policy violations if governance found any
-        governance = state.get("governance", {})
-        violations = [n for n in governance.get("nodes", []) if not n.get("compliant")]
-        if violations:
-            emit_policy_update(node, {
-                "violations": [{
-                    "node_id": n["node_id"],
-                    "policies": [v["policy_id"] for v in n.get("violations", [])],
-                } for n in violations],
-                "compliance_ratio": governance.get("compliance_ratio", 0),
-                "version": state.get("version", 0),
-                "issuer": "agent-world",
-            })
-            log.info("NADI: broadcasted %d policy violations", len(violations))
-
-        sync_stats = node.sync()
-        log.info("NADI: emitted world_state_update to %d peers, sync: %s", count, sync_stats)
+        from agent_world.legislator import run_legislator
+        leg_result = run_legislator(base_path=root)
+        log.info("Legislator: %s", leg_result)
     except Exception as exc:
-        log.warning("NADI emission failed (non-fatal): %s", exc)
+        log.warning("Legislator failed (non-fatal): %s", exc)
+        # Fallback to simple NADI emit
+        try:
+            from agent_world.federation import create_world_node, emit_world_state
+            fed_dir = root / "data" / "federation"
+            node = create_world_node(fed_dir)
+            emit_world_state(node, state)
+            node.heartbeat(health=1.0, version=str(state.get("version", 0)))
+            node.sync()
+        except Exception as exc2:
+            log.warning("NADI fallback also failed: %s", exc2)
 
     return destination, state
