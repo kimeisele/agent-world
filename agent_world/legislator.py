@@ -47,7 +47,7 @@ class Legislator:
         self.cycle_count += 1
         observations = self.perceive()
         decisions = self.judge(observations)
-        actions = self.act(decisions)
+        actions = self.act(decisions, observations)
         self.emit_status(observations, actions)
 
         log.info(
@@ -89,6 +89,7 @@ class Legislator:
             "compliance_ratio": governance.get("compliance_ratio", 0),
             "total_nodes": governance.get("total_nodes", 0),
             "non_compliant": non_compliant,
+            "nodes": governance.get("nodes", []),
             "city_reports": city_reports,
             "timestamp": time.time(),
         }
@@ -122,10 +123,11 @@ class Legislator:
 
         return decisions
 
-    def act(self, decisions: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    def act(self, decisions: list[dict[str, Any]], observations: dict[str, Any] | None = None) -> list[dict[str, Any]]:
         """Execute governance decisions via NADI."""
         node = self._get_nadi_node()
         actions = []
+        observations = observations or {}
 
         violations = [d for d in decisions if d["type"] == "policy_violation"]
         if violations:
@@ -137,7 +139,7 @@ class Legislator:
                         "policies": v["violations"],
                         "trust_penalty": v["trust_penalty"],
                     } for v in violations],
-                    "compliance_ratio": 0,  # will be set from observations
+                    "compliance_ratio": observations.get("compliance_ratio", 0),
                     "issuer": "legislator",
                     "timestamp": time.time(),
                 },
@@ -145,6 +147,80 @@ class Legislator:
             )
             actions.append({"emitted": "policy_update", "violation_count": len(violations)})
             log.info("Legislator ACT: broadcasted %d violations", len(violations))
+
+        # ── Compliance Reports (targeted, per-node) ──────────────────
+        # Non-compliant nodes get a report with their violations
+        for nc_node in observations.get("non_compliant", []):
+            node_id = nc_node.get("node_id", "")
+            if not node_id:
+                continue
+            node.emit(
+                "compliance_report",
+                {
+                    "node_id": node_id,
+                    "compliant": False,
+                    "violations": [v["policy_id"] for v in nc_node.get("violations", [])],
+                    "trust_score": nc_node.get("trust_score", 0),
+                    "compliance_ratio": observations.get("compliance_ratio", 0),
+                    "issuer": "legislator",
+                    "timestamp": time.time(),
+                },
+                target=node_id,
+                priority=2,
+            )
+            actions.append({"emitted": "compliance_report", "target": node_id, "compliant": False})
+            log.info("Legislator ACT: compliance_report → %s (non-compliant)", node_id)
+
+            # Governance bounties: each violation becomes an economic incentive
+            for violation in nc_node.get("violations", []):
+                policy_id = violation.get("policy_id", "unknown")
+                node.emit(
+                    "governance_bounty",
+                    {
+                        "target": f"fix:{policy_id}:{node_id}",
+                        "severity": "high",
+                        "reward": 108,  # MALA
+                        "description": f"Policy {policy_id} violated by {node_id}",
+                        "issuer": "legislator",
+                        "timestamp": time.time(),
+                    },
+                    target="steward",
+                    priority=2,
+                )
+            if nc_node.get("violations"):
+                actions.append({
+                    "emitted": "governance_bounty",
+                    "target": "steward",
+                    "violation_count": len(nc_node["violations"]),
+                    "node_id": node_id,
+                })
+                log.info(
+                    "Legislator ACT: %d governance_bounties → steward for %s",
+                    len(nc_node["violations"]),
+                    node_id,
+                )
+
+        # Compliant nodes get positive reports (trust reinforcement)
+        for n in observations.get("nodes", []):
+            if n.get("compliant"):
+                node_id = n.get("node_id", "")
+                if not node_id:
+                    continue
+                node.emit(
+                    "compliance_report",
+                    {
+                        "node_id": node_id,
+                        "compliant": True,
+                        "violations": [],
+                        "trust_score": n.get("trust_score", 0),
+                        "compliance_ratio": observations.get("compliance_ratio", 0),
+                        "issuer": "legislator",
+                        "timestamp": time.time(),
+                    },
+                    target=node_id,
+                    priority=1,
+                )
+                actions.append({"emitted": "compliance_report", "target": node_id, "compliant": True})
 
         health_warnings = [d for d in decisions if d["type"] == "federation_health_warning"]
         for hw in health_warnings:
