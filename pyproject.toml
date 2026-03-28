@@ -13,6 +13,7 @@ authors = [{name = "kimeisele"}]
 keywords = ["agents", "world", "governance", "federation", "registry"]
 dependencies = [
     "PyYAML>=6.0",
+    "nadi-kit @ git+https://github.com/kimeisele/steward-federation.git",
 ]
 
 [project.optional-dependencies]
