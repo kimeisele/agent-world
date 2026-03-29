@@ -1,1 +1,62 @@
+name: World Heartbeat
 
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '*/30 * * * *'
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install
+        run: python -m pip install -e '.[dev]'
+      - name: Test
+        run: pytest -q
+
+  commit-state:
+    needs: verify
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -e '.[dev]'
+      - name: Run heartbeat + commit state
+        env:
+          GH_TOKEN: ${{ secrets.FEDERATION_PAT || secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.FEDERATION_PAT || secrets.GITHUB_TOKEN }}
+        run: |
+          python -m agent_world.cli heartbeat
+          git config user.name "agent-world-bot"
+          git config user.email "bot@agent-world"
+          git add data/world_state.json data/federation/ || true
+          if git diff --cached --quiet; then
+            echo "No state changes."
+          else
+            git commit -m "chore: world heartbeat state update"
+            git push || echo "Push failed (non-fatal)"
+          fi
+
+  publish-authority-feed:
+    needs: [verify, commit-state]
+    if: always() && needs.verify.result == 'success'
+    uses: kimeisele/agent-internet/.github/workflows/reusable-publish-authority-feed.yml@main
+    with:
+      install-command: python -m pip install -e '.[dev]'
+      build-command: |
+        python -m agent_world.cli heartbeat
+        python -m agent_world.cli export-authority-feed --repo-root . --output-dir .authority-feed-out
