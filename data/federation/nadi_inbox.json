@@ -6390,5 +6390,151 @@
     "timestamp": 1774966957.8302395,
     "ttl_ms": 900000,
     "ttl_s": 900.0
+  },
+  {
+    "correlation_id": "2bb55f03-88e0-4579-a074-7a5846de62c0",
+    "envelope_id": "2bb55f03-88e0-4579-a074-7a5846de62c0",
+    "maha_header_hex": "238e10b6e43f4887db77c25041f388a73842b4d45a08be193d6af09f914cf4623254e39acee73322d0038f39d6b97d84a0bb0d0000000000ab47c7a58f365214147a30abf9e096e9",
+    "nadi_op": "send",
+    "nadi_priority": "rajas",
+    "nadi_type": "vyana",
+    "operation": "diagnostic_report",
+    "payload": {
+      "diagnostic": {
+        "agent_id": "ag_e3331b8d3b0d20a7",
+        "checks": [
+          "repo_inaccessible"
+        ]
+      },
+      "steward_action": "suspect_investigation",
+      "target_peer": "ag_e3331b8d3b0d20a7",
+      "trust": 0.8
+    },
+    "priority": 1,
+    "source": "steward",
+    "target": "agent-world",
+    "timestamp": 1774971378.8355062,
+    "ttl_ms": 900000,
+    "ttl_s": 900.0
+  },
+  {
+    "correlation_id": "51478f53-d1a5-478c-92b6-ee2d3b8c63bd",
+    "envelope_id": "51478f53-d1a5-478c-92b6-ee2d3b8c63bd",
+    "maha_header_hex": "238e10b6e43f4887db77c25041f388a73842b4d45a08be19cdd011495b6b41c93254e39acee73322d0038f39d6b97d84a0bb0d0000000000ab47c7a58f365214e4c0d17d33c72342",
+    "nadi_op": "send",
+    "nadi_priority": "rajas",
+    "nadi_type": "vyana",
+    "operation": "heartbeat",
+    "payload": {
+      "agent_id": "ag_e3331b8d3b0d20a7",
+      "capabilities": [
+        "code_analysis",
+        "task_execution",
+        "ci_automation",
+        "federation_bridge",
+        "autonomous_daemon"
+      ],
+      "fingerprint": "ba8429a39e537cb86305b4438d0293c04ff7f286fd7a403cf20a232ba2599c7e",
+      "health": 0.854114029192283,
+      "repo": "kimeisele/steward",
+      "timestamp": 1774970759.6508055,
+      "version": "0.17.0"
+    },
+    "priority": 1,
+    "source": "steward",
+    "target": "agent-world",
+    "timestamp": 1774971378.8355062,
+    "ttl_ms": 900000,
+    "ttl_s": 900.0
+  },
+  {
+    "correlation_id": "8d7bde09-b0de-43f5-81ff-c65623c22d05",
+    "envelope_id": "8d7bde09-b0de-43f5-81ff-c65623c22d05",
+    "maha_header_hex": "238e10b6e43f4887db77c25041f388a73842b4d45a08be19cdd011495b6b41c93254e39acee73322d0038f39d6b97d84a0bb0d0000000000ab47c7a58f365214e4c0d17d33c72342",
+    "nadi_op": "send",
+    "nadi_priority": "rajas",
+    "nadi_type": "vyana",
+    "operation": "heartbeat",
+    "payload": {
+      "agent_id": "ag_e3331b8d3b0d20a7",
+      "capabilities": [
+        "code_analysis",
+        "task_execution",
+        "ci_automation",
+        "federation_bridge",
+        "autonomous_daemon"
+      ],
+      "fingerprint": "ba8429a39e537cb86305b4438d0293c04ff7f286fd7a403cf20a232ba2599c7e",
+      "health": 0.857804822028598,
+      "repo": "kimeisele/steward",
+      "timestamp": 1774970767.8753974,
+      "version": "0.17.0"
+    },
+    "priority": 1,
+    "source": "steward",
+    "target": "agent-world",
+    "timestamp": 1774971378.8355062,
+    "ttl_ms": 900000,
+    "ttl_s": 900.0
+  },
+  {
+    "correlation_id": "256b10d9-913a-46da-8222-e9f10d19b665",
+    "envelope_id": "256b10d9-913a-46da-8222-e9f10d19b665",
+    "maha_header_hex": "238e10b6e43f4887db77c25041f388a73842b4d45a08be19cdd011495b6b41c93254e39acee73322d0038f39d6b97d84a0bb0d0000000000ab47c7a58f365214e4c0d17d33c72342",
+    "nadi_op": "send",
+    "nadi_priority": "rajas",
+    "nadi_type": "vyana",
+    "operation": "heartbeat",
+    "payload": {
+      "agent_id": "ag_e3331b8d3b0d20a7",
+      "capabilities": [
+        "code_analysis",
+        "task_execution",
+        "ci_automation",
+        "federation_bridge",
+        "autonomous_daemon"
+      ],
+      "fingerprint": "ba8429a39e537cb86305b4438d0293c04ff7f286fd7a403cf20a232ba2599c7e",
+      "health": 0.857804822028598,
+      "repo": "kimeisele/steward",
+      "timestamp": 1774970781.694432,
+      "version": "0.17.0"
+    },
+    "priority": 1,
+    "source": "steward",
+    "target": "agent-world",
+    "timestamp": 1774971378.8355062,
+    "ttl_ms": 900000,
+    "ttl_s": 900.0
+  },
+  {
+    "correlation_id": "324312e5-5c95-42aa-bbfe-8f15283455c8",
+    "envelope_id": "324312e5-5c95-42aa-bbfe-8f15283455c8",
+    "maha_header_hex": "238e10b6e43f4887db77c25041f388a73842b4d45a08be19cdd011495b6b41c93254e39acee73322d0038f39d6b97d84a0bb0d0000000000ab47c7a58f365214e4c0d17d33c72342",
+    "nadi_op": "send",
+    "nadi_priority": "rajas",
+    "nadi_type": "vyana",
+    "operation": "heartbeat",
+    "payload": {
+      "agent_id": "ag_e3331b8d3b0d20a7",
+      "capabilities": [
+        "code_analysis",
+        "task_execution",
+        "ci_automation",
+        "federation_bridge",
+        "autonomous_daemon"
+      ],
+      "fingerprint": "ba8429a39e537cb86305b4438d0293c04ff7f286fd7a403cf20a232ba2599c7e",
+      "health": 0.857804822028598,
+      "repo": "kimeisele/steward",
+      "timestamp": 1774970781.8654706,
+      "version": "0.17.0"
+    },
+    "priority": 1,
+    "source": "steward",
+    "target": "agent-world",
+    "timestamp": 1774971378.8355062,
+    "ttl_ms": 900000,
+    "ttl_s": 900.0
   }
 ]
