@@ -1166,5 +1166,21 @@
     "operation": "heartbeat",
     "source_city_id": "steward",
     "target_city_id": "agent-world"
+  },
+  {
+    "correlation_id": "9f45f6e3-78cb-4386-857e-ab168642045a",
+    "delivered_at": 1774925373.268347,
+    "envelope_id": "9f45f6e3-78cb-4386-857e-ab168642045a",
+    "operation": "heartbeat",
+    "source_city_id": "steward",
+    "target_city_id": "agent-world"
+  },
+  {
+    "correlation_id": "fe7798de-ff71-479a-94d4-5b5f66014f17",
+    "delivered_at": 1774925385.0444443,
+    "envelope_id": "fe7798de-ff71-479a-94d4-5b5f66014f17",
+    "operation": "heartbeat",
+    "source_city_id": "steward",
+    "target_city_id": "agent-world"
   }
 ]
