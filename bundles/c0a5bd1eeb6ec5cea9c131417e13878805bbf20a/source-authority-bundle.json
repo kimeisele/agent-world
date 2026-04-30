@@ -1,0 +1,83 @@
+{
+  "artifact_paths": {
+    "canonical_surface": ".authority-exports/canonical-surface.json",
+    "public_summary_registry": ".authority-exports/public-summary-registry.json",
+    "source_surface_registry": ".authority-exports/source-surface-registry.json",
+    "surface_metadata": ".authority-exports/surface-metadata.json"
+  },
+  "authority_exports": [
+    {
+      "artifact_uri": ".authority-exports/canonical-surface.json",
+      "content_sha256": "bf1acbf5bb858a0cead3dcf8949b02ddd8ce0f88489c30395ea8f13535adf41b",
+      "contract_version": 1,
+      "export_id": "agent-world/canonical_surface",
+      "export_kind": "canonical_surface",
+      "generated_at": 1777554364.444406,
+      "labels": {
+        "source_sha": "c0a5bd1eeb6ec5cea9c131417e13878805bbf20a"
+      },
+      "repo_id": "agent-world",
+      "version": "c0a5bd1eeb6e"
+    },
+    {
+      "artifact_uri": ".authority-exports/public-summary-registry.json",
+      "content_sha256": "fb112f016a1f7d710930a14c55a123916560206bcef49215fc35554322c32db8",
+      "contract_version": 1,
+      "export_id": "agent-world/public_summary_registry",
+      "export_kind": "public_summary_registry",
+      "generated_at": 1777554364.444406,
+      "labels": {
+        "source_sha": "c0a5bd1eeb6ec5cea9c131417e13878805bbf20a"
+      },
+      "repo_id": "agent-world",
+      "version": "c0a5bd1eeb6e"
+    },
+    {
+      "artifact_uri": ".authority-exports/source-surface-registry.json",
+      "content_sha256": "cf1db2df1c8148c82426b49d82dbbc4a7f62fb0b18be304756a1e33e2cb30349",
+      "contract_version": 1,
+      "export_id": "agent-world/source_surface_registry",
+      "export_kind": "source_surface_registry",
+      "generated_at": 1777554364.444406,
+      "labels": {
+        "source_sha": "c0a5bd1eeb6ec5cea9c131417e13878805bbf20a"
+      },
+      "repo_id": "agent-world",
+      "version": "c0a5bd1eeb6e"
+    },
+    {
+      "artifact_uri": ".authority-exports/surface-metadata.json",
+      "content_sha256": "f9fe238804bf496906728804e8b4fc1fbed6d3db845c73f9cf16370e5a5f843d",
+      "contract_version": 1,
+      "export_id": "agent-world/surface_metadata",
+      "export_kind": "surface_metadata",
+      "generated_at": 1777554364.444406,
+      "labels": {
+        "source_sha": "c0a5bd1eeb6ec5cea9c131417e13878805bbf20a"
+      },
+      "repo_id": "agent-world",
+      "version": "c0a5bd1eeb6e"
+    }
+  ],
+  "generated_at": 1777554364.444406,
+  "kind": "source_authority_bundle",
+  "repo_role": {
+    "consumes": [],
+    "exports": [
+      "canonical_surface",
+      "public_summary_registry",
+      "source_surface_registry",
+      "surface_metadata"
+    ],
+    "labels": {
+      "public_surface_owner": "agent-internet"
+    },
+    "owner_boundary": "world_governance_surface",
+    "publication_targets": [
+      "agent-world-public-wiki"
+    ],
+    "repo_id": "agent-world",
+    "role": "normative_source"
+  },
+  "source_sha": "c0a5bd1eeb6ec5cea9c131417e13878805bbf20a"
+}
