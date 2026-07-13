@@ -51,10 +51,23 @@ jobs:
             git push || echo "Push failed (non-fatal)"
           fi
 
-      - name: Write heartbeat payload
+      - name: Install nadi-kit
+        env:
+          GH_TOKEN: ${{ secrets.FEDERATION_PAT || secrets.GITHUB_TOKEN }}
+        run: |
+          python -m pip install cryptography
+          curl -sL -H "Authorization: token ${GH_TOKEN}" "https://raw.githubusercontent.com/kimeisele/steward-federation/main/nadi_kit.py" -o nadi_kit.py
+
+      - name: Run NADI heartbeat cycle
+        env:
+          NODE_PRIVATE_KEY: ${{ secrets.NODE_PRIVATE_KEY }}
+          GH_TOKEN: ${{ secrets.FEDERATION_PAT || secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.FEDERATION_PAT || secrets.GITHUB_TOKEN }}
         run: |
           mkdir -p data/federation
-          echo '[{"agent_id":"agent-world","operation":"heartbeat","source":"agent-world","status":"alive","role":"world_faculty"}]' > data/federation/nadi_outbox.json
+          python3 nadi_kit.py sync
+          python3 nadi_kit.py heartbeat
+          python3 nadi_kit.py sync
 
       - name: Relay outbox to steward-federation hub
         if: always()
