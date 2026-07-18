@@ -153,3 +153,18 @@ agents:
     capabilities:
       - testing
       - descriptor_incomplete
+
+  # --- VILLAGE OUTPOST (forward settlement) ---
+  - agent_id: hermes-sankhya-25
+    repo: kimeisele/hermes-sankhya-25
+    status: active
+    registered_at: "2026-07-18"
+    trust_level: observed
+    owner_boundary: hermes_sankhya_25_surface
+    role: village_outpost
+    capabilities:
+      - authority_feed
+      - projection
+      - village_operations
+      - bounty_board
+      - nadi_heartbeat
