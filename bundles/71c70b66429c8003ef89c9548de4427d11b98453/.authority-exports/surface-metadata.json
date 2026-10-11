@@ -1,0 +1,128 @@
+{
+  "federation_surface": {
+    "canonical_for_public_federation": true,
+    "consumer_guidance": "Treat this authority feed and its projected wiki pages as public federation truth; authenticated control planes are companion operator surfaces.",
+    "operator_companion_surfaces": [
+      "world_heartbeat_operator_plane"
+    ],
+    "public_channels": [
+      "authority_feed_manifest",
+      "canonical_surface",
+      "public_summary_registry"
+    ],
+    "publication_model": "github_authority_feed_plus_projected_wiki",
+    "surface_role": "canonical_public_source_authority"
+  },
+  "kind": "surface_metadata",
+  "public_surface": {
+    "canonical_index_page": {
+      "document_id": "agent_world_canonical_surface",
+      "entrypoint": false,
+      "kind": "agent_world_canonical_surface",
+      "rel": "agent_world_canonical_surface",
+      "title": "Agent World Canonical Surface",
+      "wiki_name": "Agent-World-Canonical-Surface"
+    },
+    "document_prefix": "agent_world",
+    "overview_page": {
+      "document_id": "agent_world_authority",
+      "entrypoint": true,
+      "kind": "agent_world_authority",
+      "rel": "agent_world_authority",
+      "title": "Agent World Authority",
+      "wiki_name": "Agent-World-Authority"
+    },
+    "repo_label": "Agent World"
+  },
+  "repo_id": "agent-world",
+  "surface_registry": {
+    "document_count": 5,
+    "pages": [
+      {
+        "authority": "binding",
+        "domain": "governance",
+        "featured": true,
+        "filename": "World-Constitution.md",
+        "id": "world_constitution",
+        "include_in_sidebar": true,
+        "page_class": "canonical",
+        "public_summary": "The constitutional baseline for world-level governance and boundaries.",
+        "query_aliases": [],
+        "section": "Foundations",
+        "title": "World Constitution",
+        "wiki_name": "World-Constitution"
+      },
+      {
+        "authority": "reference",
+        "domain": "registry",
+        "featured": false,
+        "filename": "World-Registry.md",
+        "id": "world_registry",
+        "include_in_sidebar": true,
+        "page_class": "canonical",
+        "public_summary": "The authoritative registry of known cities and their world-scoped standing.",
+        "query_aliases": [],
+        "section": "Registry",
+        "title": "World Registry",
+        "wiki_name": "World-Registry"
+      },
+      {
+        "authority": "binding",
+        "domain": "policy",
+        "featured": false,
+        "filename": "World-Policies.md",
+        "id": "world_policies",
+        "include_in_sidebar": false,
+        "page_class": "canonical",
+        "public_summary": "Declared global policy rules that sit above any single city runtime.",
+        "query_aliases": [],
+        "section": "Policy",
+        "title": "World Policies",
+        "wiki_name": "World-Policies"
+      },
+      {
+        "authority": "reference",
+        "domain": "boundary",
+        "featured": false,
+        "filename": "Repo-Boundaries.md",
+        "id": "repo_boundaries",
+        "include_in_sidebar": true,
+        "page_class": "canonical",
+        "public_summary": "The verified responsibility split across steward-protocol, agent-world, agent-city, agent-internet, and steward.",
+        "query_aliases": [],
+        "section": "Boundary",
+        "title": "Repo Boundaries",
+        "wiki_name": "Repo-Boundaries"
+      },
+      {
+        "authority": "operative",
+        "domain": "coordination",
+        "featured": false,
+        "filename": "Cross-Repo-Roadmap.md",
+        "id": "cross_repo_roadmap",
+        "include_in_sidebar": false,
+        "page_class": "canonical",
+        "public_summary": "The migration path for moving world semantics out of city-local contracts and into agent-world.",
+        "query_aliases": [],
+        "section": "Coordination",
+        "title": "Cross Repo Roadmap",
+        "wiki_name": "Cross-Repo-Roadmap"
+      }
+    ],
+    "sections": [
+      "Boundary",
+      "Coordination",
+      "Foundations",
+      "Policy",
+      "Registry"
+    ]
+  },
+  "world": {
+    "operator_repo": "kimeisele/steward",
+    "origin_id": "world://agent-world",
+    "projection_repo": "kimeisele/agent-internet",
+    "substrate_repo": "kimeisele/steward-protocol",
+    "world_id": "agent-world",
+    "world_name": "Agent World"
+  }
+}
